@@ -1,0 +1,5 @@
+{
+    "env": {
+        "RUTA": "http://localhost:8080/"
+    }
+}

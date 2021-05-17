@@ -24,7 +24,7 @@ export default {
   methods: {
    
     imprimir() {
-      window.open("http://localhost:8080/", "_blank");
+      window.open("/", "_blank");
       /*       var originalContents = document.body.innerHTML;
       document.getElementById("boton").hidden= "off"; 
       var printContents = document.getElementById("body").innerHTML;
