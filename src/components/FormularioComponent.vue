@@ -315,6 +315,11 @@ export default {
 }
 
 @media (max-width: 767px) {
+  
+  
+  .gridencabezado  > div{
+  height: 46px;
+}
   .lafirma {
     height: 100%;
     width: 100%;
@@ -338,6 +343,7 @@ export default {
     content: url("../imagenes/logo/BS.png");
     width: 50%;
     height: 100%;
+    border-radius: 3px;
   }
   .nombrereporte {
     display: flex;
@@ -379,6 +385,10 @@ align-self: center;
   }
 }
 @media print {
+    .miimagen {
+  width: 70%;
+  height: 100%;
+}
   .lafirma {
     height: 100%;
     width: 100%;

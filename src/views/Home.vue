@@ -141,7 +141,7 @@ export default {
 .subtitulonegrita {
   font-weight: 500;
 }
-img {
+.miimagen {
   width: 70%;
   height: 100%;
 }
@@ -150,6 +150,7 @@ img {
 }
 
 @media (max-width: 767px) {
+
   .grid {
     display: grid;
     grid-template-columns: repeat(1, 100%);
@@ -167,6 +168,7 @@ img {
     content: url("../imagenes/logo/BS.png");
     width: 50%;
     height: 100%;
+    border-radius: 3px;
   }
    .nombrereporte {
     display: flex;
@@ -192,6 +194,10 @@ img {
   }
 }
 @media print {
+  .miimagen {
+  width: 70%;
+  height: 100%;
+}
   .grid > div {
     background-color: #ffffff;
     padding: 5px;
@@ -297,10 +303,7 @@ img {
   .subtitulonegrita {
     font-weight: 500;
   }
-  img {
-    width: 70%;
-    height: 100%;
-  }
+ 
   .miimagen {
     content: url("../imagenes/logo/biosystems.jpg");
   }
