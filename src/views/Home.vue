@@ -21,6 +21,7 @@ export default {
       document.body.innerHTML = printContents;
 
       window.print();
+      
     },
     printFacture() {
       var pdf = new jsPDF();
@@ -37,19 +38,7 @@ export default {
 };
 </script>
 <style >
-.btn {
-  background-color: DodgerBlue;
-  border: none;
-  color: white;
-  padding: 12px 30px;
-  cursor: pointer;
-  font-size: 20px;
-}
 
-/* Darker background on mouse-over */
-.btn:hover {
-  background-color: RoyalBlue;
-}
 .grid > div {
   background-color: #ffffff;
   padding: 5px;
@@ -173,12 +162,17 @@ img {
     grid-column-start: 1;
     grid-column-end: 2;
   }
-  img {
-    width: 100%;
-    height: 100%;
-  }
+
   .miimagen {
     content: url("../imagenes/logo/BS.png");
+    width: 50%;
+    height: 100%;
+  }
+   .nombrereporte {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100%;
   }
   .gridparejas {
     display: grid;
