@@ -1,6 +1,6 @@
 <template>
   <div >
-    <formulario-component></formulario-component>
+    <plantilla-reporte-component/>
 
     <button id="boton" @click="imprimir">Download PDF</button>
   </div>
@@ -8,13 +8,15 @@
 
 <script>
 
-import  FormularioComponent  from '../components/FormularioComponent'
+import  PlantillaReporteComponent  from '../components/PlantillaReporteComponent'
+
 
 
 export default {
   name: "ReporteComponent",
   components: {
-    FormularioComponent
+    
+    PlantillaReporteComponent
     
   },
   data:()=> ({

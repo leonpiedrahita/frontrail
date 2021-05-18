@@ -29,11 +29,7 @@ const routes = [
     name: 'Firma',
     component: () => import(/* webpackChunkName: "firma" */ '../views/Firma.vue')
   },
-  {
-    path: '/formulario',
-    name: 'Formulario',
-    component: () => import(/* webpackChunkName: "formulario" */ '../views/Formulario.vue')
-  },
+  
 ]
 
 const router = new VueRouter({

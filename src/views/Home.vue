@@ -1,17 +1,20 @@
 <template>
-  <formulario-component></formulario-component>
+  <plantilla-reporte-component/>
 </template>
 
 <script>
 import jsPDF from "jspdf";
-import FormularioComponent from "../components/FormularioComponent";
+
 import html2canvas from "html2canvas";
+import PlantillaReporteComponent from '../components/PlantillaReporteComponent.vue';
 export default {
   components: {
-    FormularioComponent,
+    
+    PlantillaReporteComponent,
   },
   mounted() {
-    this.imprimir();
+    setTimeout(this.imprimir(2000));
+    
   },
   methods: {
     imprimir() {
