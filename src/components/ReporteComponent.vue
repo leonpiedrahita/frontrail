@@ -38,6 +38,7 @@ export default {
       
       document.body.innerHTML = originalContents; */
     },
+    
   },
 };
 </script>

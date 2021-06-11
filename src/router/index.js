@@ -29,7 +29,21 @@ const routes = [
     name: 'Firma',
     component: () => import(/* webpackChunkName: "firma" */ '../views/Firma.vue')
   },
-  
+  {
+    path: '/listarequiposgenerarorden',
+    name: 'ListarEquiposGenerarOrden',
+    component: () => import(/* webpackChunkName: "listarequiposgenerarorden" */ '../views/ListarEquiposGenerarOrden.vue')
+  },
+  {
+    path: '/formulariogenerarorden',
+    name: 'FormularioGenerarOrden',
+    component: () => import(/* webpackChunkName: "formulariogenerarorden" */ '../views/FormularioGenerarOrden.vue')
+  },
+  {
+    path: '/listarclientes',
+    name: 'ListarClientes',
+    component: () => import(/* webpackChunkName: "listarclientes" */ '../views/ListarClientes.vue')
+  },
 ]
 
 const router = new VueRouter({

@@ -127,14 +127,14 @@
       <div class="grid principal" fluid>
         <div class="gridfirma">
           <div class="lafirma">
-            <img :src="reporte.firma" style="max-width: 50%" />
+            <img :src="reporte.firmacliente" style="max-width: 50%" />
           </div>
           <div class="nombrefirma">123456789</div>
         </div>
         <div class="gridfirma">
           <div class="lafirma">
             <img
-              :src="reporte.firma"
+              :src="reporte.firmacliente"
               style="max-width: 50%"
               class="imagenfirma"
             />
@@ -143,47 +143,65 @@
         </div>
       </div>
     </div>
+    <pre>
+       <pre>
+        {{$data.reporte}} <!-- para imprimir las categorias en pantalla -->
+    </pre>
+    
+  </pre>
   </div>
+  
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: "FormularioComponent",
   components: {},
   data: () => ({
     reporte: {
     numero: null,
-    tipodeasistencia:"cualquiercosa",
-    duracion:"cualquiercosa",
-    fechadeinicio:"cualquiercosa",
-    fechadefinalizacion:"cualquiercosa",
+    tipodeasistencia:"",
+    duracion:"",
+    fechadeinicio:"",
+    fechadefinalizacion:"",
     infoequipo:{
-      nombre:"cualquier nombre",
-      serie:"cualquier serie",
-      marca:"cualquier marca",
+      nombre:"",
+      serie:"",
+      marca:"",
     },
-    propietario:"cualquiercosa",
-    nombrecliente:"cualquiercosa",
-    nitcliente:"cualquiercosa",
-    sedecliente:"cualquiercosa",
-    direccioncliente:"cualquiercosa",
-    profesionalcliente:"cualquiercosa",
-    telefonocliente:"cualquiercosa",
-    hallazgos:"cualquiercosa",
-    actividades:"cualquiercosa",
-    pruebas:"cualquiercosa",
-    repuestos:"cualquiercosa",
-    observaciones:"cualquiercosa",
+    propietario:"",
+    nombrecliente:"",
+    nitcliente:"",
+    sedecliente:"",
+    direccioncliente:"",
+    profesionalcliente:"",
+    telefonocliente:"",
+    hallazgos:"",
+    actividades:"",
+    pruebas:"",
+    repuestos:"",
+    observaciones:"",
       firmacliente:"",
       ingeniero:"",
     },
+   
   }),
-  beforeMount() {
+ created() {
     this.listar();
   },
   methods: {
     listar() {
-      this.reporte.nombre = 12345;
+      axios.get('http://localhost:3000/api/reporte/listaruno/60a30b160c50973d14744878')
+      .then(
+        response =>{
+          this.reporte = response.data;
+        }
+      )
+      .catch(error=>{
+        console.log(error);
+        return error;
+      })
     },
   },
 };
@@ -209,6 +227,7 @@ export default {
 }
 .miimagen {
   content: url("../imagenes/logo/biosystems.jpg");
+  border-radius: 3px;
 }
 
 .grid > div {
@@ -295,6 +314,15 @@ export default {
   /* border: 5px solid black; */
 }
 .gridparejas {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  grid-template-rows: repeat(1, 2);
+  background-color: #424242;
+  align-items: center;
+
+  /* border: 5px solid black; */
+}
+.gridtrio {
   display: grid;
   grid-template-columns: 2fr 3fr;
   grid-template-rows: repeat(1, 2);

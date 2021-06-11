@@ -13,8 +13,8 @@ export default {
     PlantillaReporteComponent,
   },
   mounted() {
-    setTimeout(this.imprimir(2000));
-    
+    setTimeout(() => {  this.imprimir(); }, 3000);
+       
   },
   methods: {
     imprimir() {
@@ -150,6 +150,7 @@ export default {
 }
 .miimagen {
   content: url("../imagenes/logo/biosystems.jpg");
+  border-radius: 3px;
 }
 
 @media (max-width: 767px) {
