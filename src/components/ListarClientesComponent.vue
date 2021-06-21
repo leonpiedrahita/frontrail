@@ -1,5 +1,6 @@
 <template>
   <v-card>
+    <!-- se crea la data table prinecipal para listar los clientes -->
     <v-data-table
       :headers="headers"
       :items="equipos"
@@ -12,38 +13,39 @@
       item-key="nit"
       :loading="cargando"
       loading-text="Cargando ... por favor espere"
-    >
+    ><!-- Se crea la data table secundaria para listar las sedes -->
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <div class="sp-details" justify="center">
             <div class="col-xs-5 col-md-8 text-center">
               <v-data-table :headers="encabezado" :items="item.sede">
-                <template v-slot:[`item.actions`]="{ item }">
-                  <v-icon medium @click="editItem(item)"> mdi-pencil </v-icon>
-
+                <template v-slot:[`item.eliminarsede`]="{ item }">
+                  <!-- Botón de basura para eliminar la sede -->
+                  <v-icon medium @click="deleteItem(item)"> mdi-delete-empty </v-icon>
                 </template>
               </v-data-table>
             </div>
           </div>
         </td>
       </template>
-
+      <!-- Encabledazo de la página -->
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Dispositivos</v-toolbar-title>
+          <v-toolbar-title>Clientes y Sedes</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Buscar: Cliente / Nombre / Serie"
+            label="Buscar: Cliente / NIT / Nombre / Teléfono"
             single-line
             hide-details
           ></v-text-field>
+          <!-- Dialogo para editar Cliente -->
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
               <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
+                <span class="headline">{{ titulocliente }}</span>
               </v-card-title>
 
               <v-card-text>
@@ -91,22 +93,87 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
+                <v-btn color="blue darken-1" text @click="cerrareditar">
                   Cancelar
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Generar
+                <v-btn :disabled="!(editedItem.contactoprincipal[0].telefono && editedItem.contactoprincipal[0].nombre && editedItem.nit && editedItem.nombre)" color="blue darken-1" text @click="editar">
+                  Editar
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <!-- Dialogo para agregar Sede -->
+          <v-dialog v-model="dialog2" max-width="700px">
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ titulosede }}</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
+                        v-model="editedItem2.nombre"
+                        label="Sede"
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        required
+                        class="centered-input"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
+                        v-model="editedItem2.direccion"
+                        label="Direccion"
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        required
+                        class="centered-input"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="cerraragregarsede">
+                  Cancelar
+                </v-btn>
+                <v-btn :disabled="!(editedItem2.nombre && editedItem2.direccion)" color="blue darken-1" text @click="agregarnuevasede">
+                  Agregar
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <!-- Diálogo para eliminar sede -->
+          <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">¿Desea eliminar la sede?</v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="cerrareliminarsede">Cancel</v-btn>
+              <v-btn color="blue darken-1" text @click="save3">OK</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+          
         </v-toolbar>
       </template>
-      <template  v-slot:[`item.actions`]="{ item }">
+      <template v-slot:[`item.editarsede`]="{ item }">
         <div>
-        <v-icon style="margin-right: 10px" medium @click="editItem(item)"> mdi-pencil </v-icon>
-       
-        <v-icon style="margin-left: 10px" medium @click="editItem(item)"> mdi-map-marker-plus </v-icon></div>
+          <v-icon style="margin-right: 10px" medium @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+
+        </div>
+      </template>
+            <template v-slot:[`item.agregarsede`]="{ item }">
+        <div>
+          <v-icon style="margin-left: 10px" medium @click="editItem2(item)">
+            mdi-map-marker-plus
+          </v-icon>
+        </div>
       </template>
       <template v-slot:no-data>
         <v-btn color="primary" @click="initialize"> Reset </v-btn>
@@ -127,8 +194,10 @@ export default {
   data: () => ({
     expanded: [],
     input1: "",
-
+  
     dialog: false,
+    dialog2: false,
+    dialogDelete: false,
     search: "",
     cargando: true,
     encabezado: [
@@ -147,10 +216,10 @@ export default {
         width: "50%",
       },
       {
-        text: "Editar sede",
-        value: "actions",
+        text: "Eliminar sede",
+        value: "eliminarsede",
         sortable: false,
-        
+
         class: "titulo--text font-weight-bold ",
         width: "50%",
       },
@@ -183,7 +252,14 @@ export default {
       },
       {
         text: "Editar cliente",
-        value: "actions",
+        value: "editarsede",
+        sortable: false,
+        align: "center",
+        class: "titulo--text font-weight-bold",
+      },
+            {
+        text: "Agregar Sede",
+        value: "agregarsede",
         sortable: false,
         align: "center",
         class: "titulo--text font-weight-bold",
@@ -198,23 +274,40 @@ export default {
       nombre: "",
       contactoprincipal: [{}],
     },
+    editedItem2: {
+      nombre: "",
+      direccion: "",
+    },
     defaultItem: {
       nit: "",
       nombre: "",
       contactoprincipal: [{}],
     },
+      defaultItem2: {
+      nombre: "",
+      direccion: "",
+    },
   }),
 
   computed: {
-    formTitle() {
+    titulocliente() {
       return "Editar cliente";
+    },
+    titulosede() {
+      return "Agregar sede";
     },
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.cerrareditar();
     },
+       dialog2(val) {
+      val || this.cerraragregarsede();
+    },
+          dialogDelete (val) {
+        val || this.cerrareliminarsede()
+      },
   },
 
   created() {
@@ -244,8 +337,26 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
+    editItem2(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      
+      this.dialog2 = true;
+    },
+    deleteItem (item) {
+        this.editedIndex = this.desserts.indexOf(item)
+        this.editedItem2 = Object.assign({}, item)
+        this.dialogDelete = true
+      },
 
-    close() {
+      cerrareliminarsede () {
+        this.dialogDelete = false
+        this.$nextTick(() => {
+          this.editedItem2 = Object.assign({}, this.defaultItem2)
+          this.editedIndex = -1
+        })
+      },
+    cerrareditar() {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -253,12 +364,82 @@ export default {
       });
       this.listar();
     },
+    cerraragregarsede() {
+      this.dialog2 = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem2 = Object.assign({}, this.defaultItem2);
+        this.editedIndex = -1;
+      });
+      this.listar();
+    },
 
-    save() {
-      localStorage.setItem("equipo", JSON.stringify(this.editedItem));
-      this.close();
-      this.prueba = localStorage.getItem("equipo");
-      this.$router.push({ name: "FormularioGenerarOrden" });
+    editar() {
+      
+        //Editar categoria
+        axios
+          .patch(
+            "http://localhost:3000/api/cliente/actualizar/" + this.editedItem._id,
+            {
+              nombre: this.editedItem.nombre,
+              nit: this.editedItem.nit,
+              contactoprincipal: this.editedItem.contactoprincipal,
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      
+      this.cerrareditar();
+    },
+    agregarnuevasede() {
+      
+        //Editar categoria
+        axios
+          .patch(
+            "http://localhost:3000/api/cliente/agregarsede/" + this.editedItem._id,
+            {
+              nombre: this.editedItem2.nombre,
+              direccion: this.editedItem2.direccion,
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      
+      this.cerraragregarsede();
+    },
+        save3() {
+      
+      axios
+          .patch(
+            "http://localhost:3000/api/cliente/eliminarsede/",
+            {
+              nombre: this.editedItem2.nombre,
+              idcliente: this.editedItem2.idcliente,
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      
+      this.cerrareliminarsede()
+      
     },
   },
 };
