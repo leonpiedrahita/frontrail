@@ -13,7 +13,7 @@
       item-key="nit"
       :loading="cargando"
       loading-text="Cargando ... por favor espere"
-    ><!-- Se crea la data table secundaria para listar las sedes -->
+      ><!-- Se crea la data table secundaria para listar las sedes -->
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <div class="sp-details" justify="center">
@@ -21,7 +21,9 @@
               <v-data-table :headers="encabezado" :items="item.sede">
                 <template v-slot:[`item.eliminarsede`]="{ item }">
                   <!-- Botón de basura para eliminar la sede -->
-                  <v-icon medium @click="deleteItem(item)"> mdi-delete-empty </v-icon>
+                  <v-icon medium @click="deleteItem(item)">
+                    mdi-delete-empty
+                  </v-icon>
                 </template>
               </v-data-table>
             </div>
@@ -96,7 +98,19 @@
                 <v-btn color="blue darken-1" text @click="cerrareditar">
                   Cancelar
                 </v-btn>
-                <v-btn :disabled="!(editedItem.contactoprincipal[0].telefono && editedItem.contactoprincipal[0].nombre && editedItem.nit && editedItem.nombre)" color="blue darken-1" text @click="editar">
+                <v-btn
+                  :disabled="
+                    !(
+                      editedItem.contactoprincipal[0].telefono &&
+                      editedItem.contactoprincipal[0].nombre &&
+                      editedItem.nit &&
+                      editedItem.nombre
+                    )
+                  "
+                  color="blue darken-1"
+                  text
+                  @click="editar"
+                >
                   Editar
                 </v-btn>
               </v-card-actions>
@@ -139,7 +153,12 @@
                 <v-btn color="blue darken-1" text @click="cerraragregarsede">
                   Cancelar
                 </v-btn>
-                <v-btn :disabled="!(editedItem2.nombre && editedItem2.direccion)" color="blue darken-1" text @click="agregarnuevasede">
+                <v-btn
+                  :disabled="!(editedItem2.nombre && editedItem2.direccion)"
+                  color="blue darken-1"
+                  text
+                  @click="agregarnuevasede"
+                >
                   Agregar
                 </v-btn>
               </v-card-actions>
@@ -147,17 +166,20 @@
           </v-dialog>
           <!-- Diálogo para eliminar sede -->
           <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5">¿Desea eliminar la sede?</v-card-title>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="cerrareliminarsede">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save3">OK</v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-          
+            <v-card>
+              <v-card-title class="text-h5"
+                >¿Desea eliminar la sede?</v-card-title
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="cerrareliminarsede"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blue darken-1" text @click="save3">OK</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
       <template v-slot:[`item.editarsede`]="{ item }">
@@ -165,10 +187,9 @@
           <v-icon style="margin-right: 10px" medium @click="editItem(item)">
             mdi-pencil
           </v-icon>
-
         </div>
       </template>
-            <template v-slot:[`item.agregarsede`]="{ item }">
+      <template v-slot:[`item.agregarsede`]="{ item }">
         <div>
           <v-icon style="margin-left: 10px" medium @click="editItem2(item)">
             mdi-map-marker-plus
@@ -194,7 +215,7 @@ export default {
   data: () => ({
     expanded: [],
     input1: "",
-  
+
     dialog: false,
     dialog2: false,
     dialogDelete: false,
@@ -257,7 +278,7 @@ export default {
         align: "center",
         class: "titulo--text font-weight-bold",
       },
-            {
+      {
         text: "Agregar Sede",
         value: "agregarsede",
         sortable: false,
@@ -283,7 +304,7 @@ export default {
       nombre: "",
       contactoprincipal: [{}],
     },
-      defaultItem2: {
+    defaultItem2: {
       nombre: "",
       direccion: "",
     },
@@ -302,23 +323,37 @@ export default {
     dialog(val) {
       val || this.cerrareditar();
     },
-       dialog2(val) {
+    dialog2(val) {
       val || this.cerraragregarsede();
     },
-          dialogDelete (val) {
-        val || this.cerrareliminarsede()
-      },
+    dialogDelete(val) {
+      val || this.cerrareliminarsede();
+    },
   },
-
+   beforeCreate() {
+    this.$store.dispatch("autoLogin");
+    
+       
+    //this.$store.dispatch("autoLogin")? this.$router.push({name: 'ListarClientes'}) : false;
+  },
   created() {
-    this.listar();
+if (this.$store.state.existe === 0) {
+      this.$router.push({ name: "Login" });
+    }
+    else {
+      this.listar();}
+    
   },
 
   methods: {
     listar() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get("http://localhost:3000/api/cliente/listar")
+        .get("http://localhost:3000/api/cliente/listar", {
+          headers: {
+            token: this.$store.state.token,
+          },
+        })
         .then((response) => {
           this.equipos = response.data; //el this es porque no es propia de la funcion sino de l componente
 
@@ -340,22 +375,22 @@ export default {
     editItem2(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      
+
       this.dialog2 = true;
     },
-    deleteItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.editedItem2 = Object.assign({}, item)
-        this.dialogDelete = true
-      },
+    deleteItem(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem2 = Object.assign({}, item);
+      this.dialogDelete = true;
+    },
 
-      cerrareliminarsede () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem2 = Object.assign({}, this.defaultItem2)
-          this.editedIndex = -1
-        })
-      },
+    cerrareliminarsede() {
+      this.dialogDelete = false;
+      this.$nextTick(() => {
+        this.editedItem2 = Object.assign({}, this.defaultItem2);
+        this.editedIndex = -1;
+      });
+    },
     cerrareditar() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -375,71 +410,65 @@ export default {
     },
 
     editar() {
-      
-        //Editar categoria
-        axios
-          .patch(
-            "http://localhost:3000/api/cliente/actualizar/" + this.editedItem._id,
-            {
-              nombre: this.editedItem.nombre,
-              nit: this.editedItem.nit,
-              contactoprincipal: this.editedItem.contactoprincipal,
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.listar();
-          })
-          .catch((error) => {
-            console.log(error);
-            return error;
-          });
-      
+      //Editar categoria
+      axios
+        .patch(
+          "http://localhost:3000/api/cliente/actualizar/" + this.editedItem._id,
+          {
+            nombre: this.editedItem.nombre,
+            nit: this.editedItem.nit,
+            contactoprincipal: this.editedItem.contactoprincipal,
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.listar();
+        })
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
+
       this.cerrareditar();
     },
     agregarnuevasede() {
-      
-        //Editar categoria
-        axios
-          .patch(
-            "http://localhost:3000/api/cliente/agregarsede/" + this.editedItem._id,
-            {
-              nombre: this.editedItem2.nombre,
-              direccion: this.editedItem2.direccion,
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.listar();
-          })
-          .catch((error) => {
-            console.log(error);
-            return error;
-          });
-      
+      //Editar categoria
+      axios
+        .patch(
+          "http://localhost:3000/api/cliente/agregarsede/" +
+            this.editedItem._id,
+          {
+            nombre: this.editedItem2.nombre,
+            direccion: this.editedItem2.direccion,
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.listar();
+        })
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
+
       this.cerraragregarsede();
     },
-        save3() {
-      
+    save3() {
       axios
-          .patch(
-            "http://localhost:3000/api/cliente/eliminarsede/",
-            {
-              nombre: this.editedItem2.nombre,
-              idcliente: this.editedItem2.idcliente,
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.listar();
-          })
-          .catch((error) => {
-            console.log(error);
-            return error;
-          });
-      
-      this.cerrareliminarsede()
-      
+        .patch("http://localhost:3000/api/cliente/eliminarsede/", {
+          nombre: this.editedItem2.nombre,
+          idcliente: this.editedItem2.idcliente,
+        })
+        .then((response) => {
+          console.log(response);
+          this.listar();
+        })
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
+
+      this.cerrareliminarsede();
     },
   },
 };
