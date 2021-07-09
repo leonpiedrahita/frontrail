@@ -233,6 +233,7 @@ import { validationMixin } from "vuelidate";
 import { required, maxLength, email } from "vuelidate/lib/validators";
 
 export default {
+  name:'FormularioGenerarOrdenComponent',
   mixins: [validationMixin],
 
   validations: {

@@ -32,7 +32,7 @@
 
 export default {
   
-  name: "App",
+  name: "FirmaComponent",
   data: () => ({
     options: {
       penColor: "black",

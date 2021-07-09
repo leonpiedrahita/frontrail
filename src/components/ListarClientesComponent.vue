@@ -33,8 +33,8 @@
       <!-- Encabledazo de la página -->
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Clientes y Sedes</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
+          
+
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -43,6 +43,9 @@
             single-line
             hide-details
           ></v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn v-bind="size" @click="nuevoCliente()"> Nuevo Cliente </v-btn>
+          <v-spacer></v-spacer>
           <!-- Dialogo para editar Cliente -->
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
@@ -110,8 +113,25 @@
                   color="blue darken-1"
                   text
                   @click="editar"
+                  v-if="Editarcliente"
                 >
                   Editar
+                </v-btn>
+                <v-btn
+                  :disabled="
+                    !(
+                      editedItem.contactoprincipal[0].telefono &&
+                      editedItem.contactoprincipal[0].nombre &&
+                      editedItem.nit &&
+                      editedItem.nombre
+                    )
+                  "
+                  color="blue darken-1"
+                  text
+                  @click="agregarCliente"
+                  v-if="Agregarcliente"
+                >
+                  Agregar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -182,6 +202,7 @@
           </v-dialog>
         </v-toolbar>
       </template>
+
       <template v-slot:[`item.editarsede`]="{ item }">
         <div>
           <v-icon style="margin-right: 10px" medium @click="editItem(item)">
@@ -201,21 +222,43 @@
       </template>
     </v-data-table>
 
-    <pre>
-        {{$data.equipos}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
-    <pre>
-        {{$data.prueba}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
+    <v-col cols="auto">
+      <v-dialog
+        transition="dialog-top-transition"
+        max-width="500"
+        v-model="dialogo"
+      >
+        <template>
+          <v-card>
+            <v-toolbar color="error" dark class="text-h3 d-flex justify-center"
+              >Aviso!!!</v-toolbar
+            >
+            <v-card-text>
+              <div class="text-h2 pa-1 ma-1 aviso">
+                {{ $data.textodialogo }}
+              </div>
+            </v-card-text>
+            <v-card-actions class="justify-center">
+              <v-btn text @click="(dialogo = false), (textodialogo = '')"
+                >Cerrar</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+    </v-col>
   </v-card>
 </template>
 <script>
 export default {
-  name: "ListarCLientes",
+  name: "ListarCLientesComponent",
   data: () => ({
     expanded: [],
     input1: "",
-
+    Editarcliente: false,
+    Agregarcliente: false,
+    dialogo: false,
+    textodialogo: "",
     dialog: false,
     dialog2: false,
     dialogDelete: false,
@@ -317,6 +360,12 @@ export default {
     titulosede() {
       return "Agregar sede";
     },
+    size() {
+      const size = { xs: "x-small", sm: "small", lg: "large", xl: "x-large" }[
+        this.$vuetify.breakpoint.name
+      ];
+      return size ? { [size]: true } : {};
+    },
   },
 
   watch: {
@@ -330,19 +379,15 @@ export default {
       val || this.cerrareliminarsede();
     },
   },
-   beforeCreate() {
-    this.$store.dispatch("autoLogin");
-    
-       
-    //this.$store.dispatch("autoLogin")? this.$router.push({name: 'ListarClientes'}) : false;
+  beforeCreate() {
+    this.$store.dispatch("guardarUbicacion", {ubicacion:"Clientes",icono: "mdi-account-box-multiple"});
   },
   created() {
-if (this.$store.state.existe === 0) {
+    if (this.$store.state.existe === 0) {
       this.$router.push({ name: "Login" });
+    } else {
+      this.listar();
     }
-    else {
-      this.listar();}
-    
   },
 
   methods: {
@@ -366,11 +411,21 @@ if (this.$store.state.existe === 0) {
           return error;
         });
     },
+    nuevoCliente() {
+      this.$store.dispatch("autoLogin");
 
+      if (this.$store.state.existe === 0) {
+        this.$router.push({ name: "Login" });
+      } else {
+        this.Agregarcliente = true;
+        this.dialog = true;
+      }
+    },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
+      this.Editarcliente = true;
     },
     editItem2(item) {
       this.editedIndex = this.desserts.indexOf(item);
@@ -395,6 +450,9 @@ if (this.$store.state.existe === 0) {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
+        this.Editarcliente = false;
+        this.Agregarcliente = false;
+
         this.editedIndex = -1;
       });
       this.listar();
@@ -411,6 +469,7 @@ if (this.$store.state.existe === 0) {
 
     editar() {
       //Editar categoria
+      this.Editarcliente = false;
       axios
         .patch(
           "http://localhost:3000/api/cliente/actualizar/" + this.editedItem._id,
@@ -418,6 +477,11 @@ if (this.$store.state.existe === 0) {
             nombre: this.editedItem.nombre,
             nit: this.editedItem.nit,
             contactoprincipal: this.editedItem.contactoprincipal,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
+            },
           }
         )
         .then((response) => {
@@ -431,6 +495,45 @@ if (this.$store.state.existe === 0) {
 
       this.cerrareditar();
     },
+    agregarCliente() {
+      //Editar categoria
+      const encontrarnit = this.equipos.find(
+        (registro) => registro.nit === this.editedItem.nit
+      );
+
+      if (encontrarnit) {
+        this.textodialogo = "El NIT ya se encuentra registrado";
+        this.Agregarcliente = false;
+        this.cerrareditar();
+        this.dialogo = true;
+      } else {
+        this.Agregarcliente = false;
+        axios
+          .post(
+            "http://localhost:3000/api/cliente/registrar/",
+            {
+              nombre: this.editedItem.nombre,
+              nit: this.editedItem.nit,
+              contactoprincipal: this.editedItem.contactoprincipal,
+            },
+            {
+              headers: {
+                token: this.$store.state.token,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+
+        this.cerrareditar();
+      }
+    },
     agregarnuevasede() {
       //Editar categoria
       axios
@@ -440,6 +543,11 @@ if (this.$store.state.existe === 0) {
           {
             nombre: this.editedItem2.nombre,
             direccion: this.editedItem2.direccion,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
+            },
           }
         )
         .then((response) => {
@@ -455,10 +563,19 @@ if (this.$store.state.existe === 0) {
     },
     save3() {
       axios
-        .patch("http://localhost:3000/api/cliente/eliminarsede/", {
-          nombre: this.editedItem2.nombre,
-          idcliente: this.editedItem2.idcliente,
-        })
+        .patch(
+          "http://localhost:3000/api/cliente/eliminarsede/",
+          {
+            nombre: this.editedItem2.nombre,
+            direccion: this.editedItem2.direccion,
+            idcliente: this.editedItem2.idcliente,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
+            },
+          }
+        )
         .then((response) => {
           console.log(response);
           this.listar();
@@ -476,5 +593,16 @@ if (this.$store.state.existe === 0) {
 <style scoped>
 .centered-input >>> input {
   text-align: center;
+}
+.aviso {
+  text-align: center;
+}
+.toolbar {
+  flex-wrap: wrap;
+}
+@media (max-width: 767px) {
+  .tamano {
+    display: none;
+  }
 }
 </style>

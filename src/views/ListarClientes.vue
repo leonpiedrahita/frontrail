@@ -1,5 +1,5 @@
 <template>
-    <listar-clientes-component></listar-clientes-component>
+    <listar-clientes-component v-if="this.$store.state.user.rol ==='administrador'"></listar-clientes-component>
 </template>
 
 <script>
@@ -9,5 +9,6 @@ export default ({
     components:{
         ListarClientesComponent
     }
+    
 })
 </script>

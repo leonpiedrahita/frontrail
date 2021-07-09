@@ -8,9 +8,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: { //Creo las variables que son solo de lectura
-        token: null,
-        user: null,
-        existe: 0
+        token: '',
+        user: '',
+        existe: 0,
+        ubicacion:'',
+        icono:''
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme
@@ -19,9 +21,14 @@ export default new Vuex.Store({
         setUsuario(state, usuario) {//usuario es donde vamos a tener el token decodificado
             state.user = usuario
         },
-        setExistetoken(state, existe) {//usuario es donde vamos a tener el token decodificado
+        setExistetoken(state, existe) {//Se define si existe el token o no
             state.existe = existe
-        }
+        },
+        setUbicacion(state,{ubicacion, icono}){
+            state.ubicacion = ubicacion
+            state.icono = icono
+        },
+
     },
     actions: {//Las acciones hacen los llamados a las mutaciones
         guardarToken({ commit }, token) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
@@ -60,6 +67,10 @@ export default new Vuex.Store({
             commit("setUsuario", null);
             localStorage.removeItem('token');
             router.push({ name: 'Login' });
-        }
+        },
+        guardarUbicacion({ commit }, {ubicacion, icono}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
+            commit("setUbicacion", {ubicacion, icono});
+            
+        },
     }
 })

@@ -156,7 +156,7 @@
 <script>
 import axios from 'axios';
 export default {
-  name: "FormularioComponent",
+  name: "PlantillaReporteComponent",
   components: {},
   data: () => ({
     reporte: {
