@@ -10,7 +10,7 @@
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="equipo.nombre"
-            label="Nombre del equipo"
+            label="Nombre"
             disabled
             class="centered-input"
           ></v-text-field>
@@ -18,7 +18,7 @@
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="equipo.marca"
-            label="Marca del equipo"
+            label="Marca"
             disabled
             class="centered-input"
           ></v-text-field>
@@ -26,7 +26,7 @@
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="equipo.serie"
-            label="Serie del equipo"
+            label="Serie"
             disabled
             class="centered-input"
           ></v-text-field>
@@ -34,7 +34,7 @@
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="equipo.propietario.nombre"
-            label="Propietario del equipo"
+            label="Propietario"
             disabled
             class="centered-input"
           ></v-text-field>
@@ -65,7 +65,7 @@
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
-            v-model="equipo.cliente.sede[equipo.cliente.sede.length - 1].nombre"
+            v-model="equipo.ubicacionnombre"
             label="Sede"
             disabled
             class="centered-input"
@@ -73,9 +73,7 @@
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
-            v-model="
-              equipo.cliente.sede[equipo.cliente.sede.length - 1].direccion
-            "
+            v-model="equipo.ubicaciondireccion"
             label="Dirección"
             disabled
             class="centered-input"
@@ -84,21 +82,17 @@
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="reporte.nombredelprofesional"
-            :error-messages="nameErrors"
             label="Nombre del profesional"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            :rules="[(v) => !!v || 'Campo Requerido']"
           ></v-text-field>
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
             v-model="reporte.telefonodelprofesional"
-            :error-messages="nameErrors"
+            :rules="[(v) => !!v || 'Campo Requerido']"
             label="Telefono del Profesional"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -110,20 +104,18 @@
       <v-row justify="space-around">
         <v-col cols="12" md="3">
           <v-select
-            v-model="tipodeasistenciaseleccionado"
+            v-model="reporte.tipodeasistencia"
             :items="tipodeasistencia"
-            :error-messages="selectErrors"
             label="Tipo de asistencia"
             required
-            @change="$v.tipodeasistenciaseleccionado.$touch()"
-            @blur="$v.tipodeasistenciaseleccionado.$touch()"
+            :rules="[(v) => !!v || 'Campo Requerido']"
           ></v-select>
         </v-col>
 
         <v-col cols="12" md="3" class="mt-5">
           <v-slider
             label="Duración (Horas)"
-            v-model="slider"
+            v-model="reporte.duracion"
             thumb-label="always"
             max="10"
             min="0.5"
@@ -141,7 +133,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="fechadeinicio"
+                v-model="reporte.fechadeinicio"
                 label="Fecha de inicio"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -150,7 +142,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="fechadeinicio"
+              v-model="reporte.fechadeinicio"
               @input="menu1 = false"
             ></v-date-picker>
           </v-menu>
@@ -166,7 +158,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="fechadefinalizacion"
+                v-model="reporte.fechadefinalizacion"
                 label="Fecha de finalización"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -175,56 +167,187 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="fechadefinalizacion"
+              v-model="reporte.fechadefinalizacion"
               @input="menu2 = false"
             ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
-      <v-row justify="space-between">
-        <v-col cols="12" lg="4">
-          <v-text-field
-            v-model="name"
-            :error-messages="nameErrors"
-            :counter="10"
-            label="Name"
-            required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
-          ></v-text-field>
-        </v-col>
       <v-row>
         <v-col cols="12" align-self="center">
-          <div class="gridtitulo">Detalles de la asistencia :</div>
+          <div class="gridtitulo">Fallas reportada / Hallazgos :</div>
         </v-col>
       </v-row>
-        <v-col cols="12" md="4">
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <v-textarea
+            v-model="reporte.hallazgos"
+            counter
+            clearable
+            autocomplete
+            placeholder="Describa las fallas reportadas por el usuario y los hallazgos"
+            rows="3"
+            row-height="30"
+            auto-grow
+            :maxlength="250"
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-textarea>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <div class="gridtitulo">Actividades realizadas :</div>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <v-textarea
+            v-model="reporte.actividades"
+            counter
+            clearable
+            autocomplete
+            placeholder="Describa las actividades relacionadas con el soporte"
+            rows="3"
+            row-height="30"
+            auto-grow
+            :maxlength="250"
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-textarea>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <div class="gridtitulo">Pruebas de aceptación :</div>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <v-textarea
+            v-model="reporte.pruebas"
+            counter
+            clearable
+            autocomplete
+            placeholder="Liste las pruevas realizadas para verificar el adecuado funcionamiento del equipo"
+            rows="3"
+            row-height="30"
+            auto-grow
+            :maxlength="250"
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-textarea>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <div class="gridtitulo">Repuestos utilizados :</div>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <v-textarea
+            v-model="reporte.repuestos"
+            counter
+            clearable
+            autocomplete
+            placeholder="Código - Descripción - Cantidad"
+            rows="3"
+            row-height="30"
+            auto-grow
+            :maxlength="250"
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-textarea>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <div class="gridtitulo">Observaciones / Recomendaciones :</div>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <v-textarea
+            v-model="reporte.observaciones"
+            counter
+            clearable
+            autocomplete
+            placeholder="Describa las observaciones referentes a la asistencia realizada y/o recomendaciones que se dieron al usuario"
+            rows="3"
+            row-height="30"
+            auto-grow
+            :maxlength="250"
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-textarea>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" lg="6" align="center">
+          <div class="lafirma">
+            <img class="lafirma" :src="reporte.firmacliente" />
+          </div>
           <v-text-field
-            v-model="email"
-            :error-messages="emailErrors"
-            label="E-mail"
-            required
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
+            v-model="reporte.nombredelprofesional"
+            disabled
+            class="centered-input"
           ></v-text-field>
+          <p disabled class="centered-input">Recibe a satisfacción</p>
+        </v-col>
+        <v-col cols="12" lg="6" align="center">
+          <div class="lafirma">
+            <img class="lafirma" :src="reporte.firmaingeniero" />
+          </div>
+          <v-text-field
+            v-model="reporte.ingeniero"
+            disabled
+            class="centered-input"
+          ></v-text-field>
+          <p disabled class="centered-input">Responsable del soporte</p>
         </v-col>
       </v-row>
+      <v-dialog v-model="dialogofirma" max-width="450px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Firma Cliente</span>
+          </v-card-title>
+          <v-card-text>
+            <div class="container align-center">
+              <div class="col-12 justify-center">
+                <VueSignaturePad
+                  id="signature"
+                  width="350px"
+                  height="200px"
+                  ref="signaturePad"
+                  :options="options"
+                />
+              </div>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn class="blue darken-1" @click="undo"> Deshacer </v-btn>
+                <v-spacer></v-spacer>
+
+                <v-btn class="blue darken-1" @click="save"> Guardar </v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+       <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-col cols="12" lg="6" align="center">
+      <v-btn class="blue darken-1 ma-2" @click="submit">Firma Cliente</v-btn>
+      <v-btn class="blue darken-1 ma-2" @click="save"> Guardar </v-btn>
+      <v-btn class="blue darken-1 ma-2" @click="save"> Guardar y Finalizar </v-btn>
+      </v-col>
+      </v-card-actions>
     </v-container>
 
-    <v-checkbox
-      v-model="checkbox"
-      :error-messages="checkboxErrors"
-      label="Do you agree?"
-      required
-      @change="$v.checkbox.$touch()"
-      @blur="$v.checkbox.$touch()"
-    ></v-checkbox>
-
-    <v-btn class="mr-4" @click="submit">submit</v-btn>
-    <v-btn @click="clear">clear</v-btn>
     <pre>
-      {{reporte.tipodeasistencia}}
-        {{$data.equipo}} <!-- para imprimir las categorias en pantalla -->
+  <!-- para imprimir las categorias en pantalla -->
+ {{reporte}}
+    </pre>
+    <pre>
+       <!-- para imprimir las categorias en pantalla -->
     </pre>
   </form>
 </template>
@@ -233,7 +356,7 @@ import { validationMixin } from "vuelidate";
 import { required, maxLength, email } from "vuelidate/lib/validators";
 
 export default {
-  name:'FormularioGenerarOrdenComponent',
+  name: "FormularioGenerarOrdenComponent",
   mixins: [validationMixin],
 
   validations: {
@@ -249,6 +372,10 @@ export default {
 
   data: () => ({
     slider: null,
+    dialogofirma: false,
+    options: {
+      penColor: "black",
+    },
     name: "",
     email: "",
     select: null,
@@ -262,7 +389,7 @@ export default {
       "Mantenimiento preventivo y correctivo",
       "Desinstalación",
     ],
-    fechadeinicio: new Date().toISOString().substr(0, 10),
+    fechadeinicio: null,
     menu1: false,
     fechadefinalizacion: new Date().toISOString().substr(0, 10),
     menu2: false,
@@ -302,8 +429,8 @@ export default {
     },
     reporte: {
       numero: null,
-      tipodeasistencia: "",
-      duracion: "",
+      tipodeasistencia: null,
+      duracion: null,
       fechadeinicio: "",
       fechadefinalizacion: "",
       infoequipo: {
@@ -316,15 +443,17 @@ export default {
       nitcliente: "",
       sedecliente: "",
       direccioncliente: "",
-      profesionalcliente: "",
-      telefonocliente: "",
       hallazgos: "",
       actividades: "",
       pruebas: "",
       repuestos: "",
       observaciones: "",
       firmacliente: "",
+      firmaingeniero: "",
       ingeniero: "",
+    },
+    options: {
+      firma: "",
     },
   }),
 
@@ -359,21 +488,54 @@ export default {
   },
   created() {
     this.consultarequipo();
+    this.buscarfirma();
+    this.reporte.ingeniero = this.$store.state.user.nombre;
+    this.reporte.firmaingeniero = this.$store.state.user.firma;
   },
   methods: {
     submit() {
-      this.$v.$touch();
+      this.dialogofirma = true;
     },
-    clear() {
-      this.$v.$reset();
-      this.name = "";
-      this.email = "";
-      this.select = null;
-      this.checkbox = false;
-    },
+
     consultarequipo() {
       this.equipo = JSON.parse(localStorage.getItem("equipo"));
+      this.reporte.infoequipo.nombre = this.equipo.nombre;
+      this.reporte.infoequipo.serie = this.equipo.serie;
+      this.reporte.infoequipo.marca = this.equipo.marca;
+      this.reporte.propietario = this.equipo.propietario;
+      this.reporte.nombrecliente = this.equipo.cliente.nombre;
+      this.reporte.nitcliente = this.equipo.cliente.nit;
+      this.reporte.sedecliente = this.equipo.ubicacionnombre;
+      this.reporte.direccioncliente = this.equipo.ubicaciondireccion;
+
       //localStorage.removeItem('equipo')
+    },
+    buscarfirma() {
+      //va a ir a mi backend y me traerá las peticiones de la base de datos
+      axios
+        .get("http://localhost:3000/api/firma/buscar", {
+          headers: {
+            token: this.$store.state.token,
+          },
+        })
+        .then((response) => {
+          this.reporte.firmaingeniero = response.data[0].firma; //el this es porque no es propia de la funcion sino de l componente
+        })
+        .catch((error) => {
+          //console.log(error);
+          return error;
+        });
+    },
+    undo() {
+      this.$refs.signaturePad.undoSignature();
+    },
+    save() {
+      const { isEmpty, data } =
+        this.$refs.signaturePad.saveSignature("image/png");
+      console.log(isEmpty);
+      console.log(data);
+      this.reporte.firmacliente = data;
+      this.dialogofirma = false;
     },
   },
 };
@@ -384,7 +546,6 @@ export default {
   text-align: center;
   font-family: Roboto, sans-serif;
 }
-
 .gridtitulo {
   display: grid;
   grid-template-columns: 1fr;
@@ -392,5 +553,17 @@ export default {
   text-align: center;
   font-weight: bold;
   background-color: white;
+}
+.lafirma {
+  height: 200px;
+  width: 350px;
+}
+#signature {
+  border: double 3px transparent;
+  border-radius: 5px;
+  background-image: linear-gradient(white, white),
+    radial-gradient(circle at top left, #000000, #000000);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
 }
 </style>

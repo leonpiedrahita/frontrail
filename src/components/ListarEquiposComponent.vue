@@ -4,7 +4,7 @@
       :headers="headers"
       :items="equipos"
       :search="search"
-      sort-by="propietario"
+      sort-by="nombre"
       class="elevation-1"
       :loading="cargando"
       loading-text="Cargando ... por favor espere"
@@ -23,7 +23,7 @@
 
           <v-btn v-bind="size" @click="nuevoEquipo()"> Nuevo Equipo </v-btn>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog2" max-width="500px">
+          <v-dialog v-model="dialog2" max-width="500px" persistent>
             <v-card>
               <v-card-title>
                 <span class="headline">{{ formTitle }}</span>
@@ -33,12 +33,13 @@
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="nuevoequipo.nombre"
                         :items="nombresequipos"
                         label="Equipo"
                         required
-                        >{{ nuevamarca }}</v-select
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        >{{ nuevamarca }}</v-autocomplete
                       >
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
@@ -46,42 +47,47 @@
                         v-model="nuevoequipo.marca"
                         label="Marca"
                         disabled
-                        class="centered-input"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-text-field
+                        v-model="nuevoequipo.serie"
+                        label="Número de Serie"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
                         v-model="nuevoequipo.propietario.nombre"
                         :items="nombresclientes"
                         label="Propietario"
+                        class="vs__search"
                         required
-                        >{{ nuevopropietario }}</v-select
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        >{{ nuevopropietario }}</v-autocomplete
                       >
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="nuevoequipo.cliente.nombre"
                         :items="nombresclientes"
                         label="Cliente"
                         required
-                        >{{ nuevocliente }}</v-select
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        >{{ nuevocliente }}</v-autocomplete
                       >
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-text-field
-                        v-model="editedItem.cliente.nombre"
-                        label="Cliente"
-                        disabled
-                        class="centered-input"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-text-field
-                        v-model="editedItem.nombre"
-                        label="Nombre"
-                        disabled
-                        class="centered-input"
-                      ></v-text-field>
+                      <v-autocomplete
+                        v-model="nuevoequipo.ubicacion.nombre"
+                        :items="ubicacionclientes"
+                        item-text="nombre"
+                        label="Sede"
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        required
+                      >
+                      </v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -89,11 +95,24 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
+                <v-btn color="blue darken-1" text @click="close2">
                   Cancelar
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Generar
+                <v-btn
+                  :disabled="
+                    !(
+                      nuevoequipo.nombre &&
+                      nuevoequipo.serie &&
+                      nuevoequipo.propietario &&
+                      nuevoequipo.cliente &&
+                      nuevoequipo.ubicacion.nombre
+                    )
+                  "
+                  color="blue darken-1"
+                  text
+                  @click="save2"
+                >
+                  Crear
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -146,6 +165,32 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog
+            transition="dialog-top-transition"
+            max-width="500"
+            v-model="dialogo"
+          >
+            <template>
+              <v-card>
+                <v-toolbar
+                  color="error"
+                  dark
+                  class="text-h3 d-flex justify-center"
+                  >Aviso!!!</v-toolbar
+                >
+                <v-card-text>
+                  <div class="text-h3 pa-1 ma-1 aviso">
+                    {{ $data.textodialogo }}
+                  </div>
+                </v-card-text>
+                <v-card-actions class="justify-center">
+                  <v-btn text @click="(dialogo = false), (textodialogo = '')"
+                    >Cerrar</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-dialog>
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -157,11 +202,15 @@
     </pre>
     <pre>----------</pre>
     <pre>
+        {{$data.ubicacionclientes}} <!-- para imprimir las categorias en pantalla -->
+    </pre>
+    <pre>-----------</pre>
+    <pre>
         {{$data.refequipos}} <!-- para imprimir las categorias en pantalla -->
     </pre>
     <pre>-----------</pre>
     <pre>
-        {{$data.nombresclientes}} <!-- para imprimir las categorias en pantalla -->
+        {{$data.direccionclientes}} <!-- para imprimir las categorias en pantalla -->
     </pre>
     <pre>----------</pre>
     <pre>
@@ -175,6 +224,8 @@ export default {
   data: () => ({
     dialog: false,
     dialog2: false,
+    dialogo: false,
+    textodialogo: "",
     search: "",
     cargando: true,
     headers: [
@@ -193,7 +244,7 @@ export default {
       {
         text: "Ubicacion",
         align: "center",
-        value: "ubicacion",
+        value: "ubicacionnombre",
       },
 
       {
@@ -210,6 +261,8 @@ export default {
     nombresequipos: [],
     clientes: [],
     nombresclientes: [],
+    ubicacionclientes: [],
+    direccionclientes: [],
     sedeseleccionada: "",
     sedeactualizada: "",
     prueba: {},
@@ -228,6 +281,23 @@ export default {
       serie: "",
     },
     nuevoequipo: {
+      nombre: "",
+      marca: {},
+      serie: "",
+      propietario: {
+        nombre: "",
+        id: "",
+      },
+      cliente: {
+        nombre: "",
+        id: "",
+      },
+      ubicacion: {
+        nombre: "",
+        direccion: "",
+      },
+    },
+    nuevoequipopordefecto: {
       nombre: "",
       marca: {},
       serie: "",
@@ -277,8 +347,9 @@ export default {
       var filtered = this.nuevoequipo.marca.filter(function (el) {
         return el != null;
       });
-      this.nuevoequipo.marca = filtered;
+      this.nuevoequipo.marca = filtered[0];
     },
+
     nuevopropietario: function () {
       // `this` apunta a la instancia vm
       this.nuevoequipo.propietario.id = this.clientes.map((cliente) => {
@@ -289,7 +360,7 @@ export default {
       var filtered = this.nuevoequipo.propietario.id.filter(function (el) {
         return el != null;
       });
-      this.nuevoequipo.propietario.id = filtered;
+      this.nuevoequipo.propietario.id = filtered[0];
     },
     nuevocliente: function () {
       // `this` apunta a la instancia vm
@@ -301,17 +372,16 @@ export default {
       var filtered = this.nuevoequipo.cliente.id.filter(function (el) {
         return el != null;
       });
-      this.nuevoequipo.cliente.id = filtered;
-      this.nuevoequipo.ubicacion.nombre = this.clientes.map((cliente) => {
+      this.nuevoequipo.cliente.id = filtered[0];
+      this.ubicacionclientes = this.clientes.map((cliente) => {
         if (cliente.nombre === this.nuevoequipo.cliente.nombre) {
           return cliente.sede;
         }
       });
-            var filtered = this.nuevoequipo.ubicacion.nombre.filter(function (el) {
+      var filtered = this.ubicacionclientes.filter(function (el) {
         return el != null;
       });
-      this.nuevoequipo.ubicacion.nombre = filtered;
-      
+      this.ubicacionclientes = filtered[0];
     },
   },
 
@@ -358,12 +428,66 @@ export default {
         this.editedIndex = -1;
       });
     },
+    close2() {
+      this.dialog2 = false;
+      this.$nextTick(() => {
+        this.nuevoequipo = this.nuevoequipopordefecto;
+      });
+    },
 
     save() {
       localStorage.setItem("equipo", JSON.stringify(this.editedItem));
       this.close();
       this.prueba = localStorage.getItem("equipo");
       this.$router.push({ name: "FormularioGenerarOrden" });
+    },
+    save2() {
+      this.nuevoequipo.ubicacion.direccion = this.ubicacionclientes.map(
+        (equipo) => {
+          if (equipo.nombre === this.nuevoequipo.ubicacion.nombre) {
+            return equipo.direccion;
+          }
+        }
+      );
+      var filtered = this.nuevoequipo.ubicacion.direccion.filter(function (el) {
+        return el != null;
+      });
+      this.nuevoequipo.ubicacion.direccion = filtered[0];
+
+      const encontrarserie = this.equipos.find(
+        (registro) => registro.serie === this.nuevoequipo.serie
+      );
+
+      if (encontrarserie) {
+        this.textodialogo = "El número de serie ya se encuentra registrado";
+        this.dialogo = true;
+      } else {
+        axios
+          .post(
+            "http://localhost:3000/api/equipo/registrar/",
+            {
+              nuevoequipo: this.nuevoequipo,
+            },
+            {
+              headers: {
+                token: this.$store.state.token,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.$nextTick(() => {
+              this.nuevoequipo = this.nuevoequipopordefecto;
+            });
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      }
+      this.dialog2 = false;
+      /* this.close(); */
     },
     nuevoEquipo() {
       this.$store.dispatch("autoLogin");
@@ -423,6 +547,9 @@ export default {
 }
 .toolbar {
   flex-wrap: wrap;
+}
+.v-select__selection {
+  justify-content: center;
 }
 @media (max-width: 767px) {
   .tamano {
