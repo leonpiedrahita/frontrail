@@ -1,22 +1,22 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar app :class= this.$store.state.color >
+      <v-app-bar-nav-icon class="mr-5" @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title class="pa-0"
-        ><v-icon medium class="mb-1">{{ this.$store.state.icono }}</v-icon
+        ><v-icon medium class="mb-1 mr-1">{{ this.$store.state.icono }}</v-icon
         >
         {{ this.$store.state.ubicacion }}</v-toolbar-title
       >
       <v-spacer></v-spacer
       >
+     
       <v-toolbar-title
         >
         {{ this.$store.state.user.nombre }}</v-toolbar-title
       >
-      <v-spacer></v-spacer
-      ><!-- esta etiqueta me separa el contenido -->
-      <v-btn icon class="mr-5" @click="salir()">
+      
+      <v-btn icon class="mr-5 ml-5" @click="salir()">
         <v-icon> mdi-logout</v-icon>
         <span> </span>
       </v-btn>
@@ -72,7 +72,9 @@
         </v-list></v-card
       >
     </v-navigation-drawer>
+    
     <v-main class="margen">
+      
       <router-view />
     </v-main>
   </v-app>
@@ -84,6 +86,7 @@ export default {
     return {
       drawer: null,
       selectedItem: 1,
+      
     };
   },
   beforeCreate() {

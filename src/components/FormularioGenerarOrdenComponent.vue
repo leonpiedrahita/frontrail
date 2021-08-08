@@ -1,6 +1,7 @@
 <template>
   <form>
     <v-container>
+     <v-divider></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Informacion del equipo :</div>
@@ -302,14 +303,14 @@
           <p disabled class="centered-input">Responsable del soporte</p>
         </v-col>
       </v-row>
-      <v-dialog v-model="dialogofirma" max-width="450px">
+      <v-dialog v-model="dialogofirma" max-width="450px" >
         <v-card>
           <v-card-title>
             <span class="headline">Firma Cliente</span>
           </v-card-title>
           <v-card-text>
             <div class="container align-center">
-              <div class="col-12 justify-center">
+              <div class="col-12 justify-center" max-width="450px"  >
                 <VueSignaturePad
                   id="signature"
                   width="350px"
@@ -344,7 +345,7 @@
 
     <pre>
   <!-- para imprimir las categorias en pantalla -->
- {{reporte}}
+<!--  {{reporte}} -->
     </pre>
     <pre>
        <!-- para imprimir las categorias en pantalla -->
@@ -375,6 +376,7 @@ export default {
     dialogofirma: false,
     options: {
       penColor: "black",
+      
     },
     name: "",
     email: "",
@@ -491,6 +493,7 @@ export default {
     this.buscarfirma();
     this.reporte.ingeniero = this.$store.state.user.nombre;
     this.reporte.firmaingeniero = this.$store.state.user.firma;
+    
   },
   methods: {
     submit() {
@@ -542,6 +545,7 @@ export default {
 </script>
 
 <style scoped>
+
 .centered-input >>> input {
   text-align: center;
   font-family: Roboto, sans-serif;

@@ -1,5 +1,7 @@
 <template>
+
   <v-card>
+    
     <v-data-table
       :headers="headers"
       :items="equipos"
@@ -391,9 +393,14 @@ export default {
     },
   },
   beforeCreate() {
+        this.$store.dispatch("autoLogin");
+    if (this.$store.state.existe === 0) {
+      this.$router.push({ name: "Login" });
+    }
     this.$store.dispatch("guardarUbicacion", {
       ubicacion: "Equipos",
       icono: "mdi-amplifier",
+      color:'c6'
     });
   },
   created() {

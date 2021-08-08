@@ -10,6 +10,7 @@
                 
                   <div class="col-12 justify-center">
                     <VueSignaturePad
+                    
                       id="signature"
                       width="350px"
                       height="200px"

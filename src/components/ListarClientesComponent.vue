@@ -380,7 +380,11 @@ export default {
     },
   },
   beforeCreate() {
-    this.$store.dispatch("guardarUbicacion", {ubicacion:"Clientes",icono: "mdi-account-box-multiple"});
+        this.$store.dispatch("autoLogin");
+    if (this.$store.state.existe === 0) {
+      this.$router.push({ name: "Login" });
+    }
+    this.$store.dispatch("guardarUbicacion", {ubicacion:"Clientes",icono: "mdi-account-box-multiple",color:'c5'});
   },
   created() {
     if (this.$store.state.existe === 0) {

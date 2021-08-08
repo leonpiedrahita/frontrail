@@ -12,7 +12,8 @@ export default new Vuex.Store({
         user: '',
         existe: 0,
         ubicacion:'',
-        icono:''
+        icono:'',
+        color:''
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme
@@ -24,9 +25,10 @@ export default new Vuex.Store({
         setExistetoken(state, existe) {//Se define si existe el token o no
             state.existe = existe
         },
-        setUbicacion(state,{ubicacion, icono}){
+        setUbicacion(state,{ubicacion, icono,color}){
             state.ubicacion = ubicacion
             state.icono = icono
+            state.color = color
         },
 
     },
@@ -68,8 +70,8 @@ export default new Vuex.Store({
             localStorage.removeItem('token');
             router.push({ name: 'Login' });
         },
-        guardarUbicacion({ commit }, {ubicacion, icono}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
-            commit("setUbicacion", {ubicacion, icono});
+        guardarUbicacion({ commit }, {ubicacion, icono,color}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
+            commit("setUbicacion", {ubicacion, icono,color});
             
         },
     }
