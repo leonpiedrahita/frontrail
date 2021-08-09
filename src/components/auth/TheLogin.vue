@@ -1,10 +1,10 @@
 <template>
   <v-layout>
     <v-flex>
-      <v-row align="center" align-content="center" style="height: 70vh">
-        <v-col>
-          <v-card class="pa-12">
-            <v-card-title title> Formulario de Login </v-card-title>
+      <v-row align="center" class="justify-center" style="height: 100vh">
+        <v-col cols="12" lg="6" align="center">
+          <v-card class="pa-10">
+            <v-card-title title class="justify-center">  Acceder a su cuenta </v-card-title>
             <v-form ref="form" lazy-validation>
               <v-text-field
                 v-model="login.email"
@@ -26,7 +26,7 @@
                 block
                 @click="loginUser"
               >
-                Login
+                Ingresar
               </v-btn>
             </v-form>
           </v-card>
@@ -60,7 +60,7 @@ export default {
   methods: {
     async loginUser() {
       axios
-        .post("http://localhost:3000/api/usuario/ingresar", this.login)
+        .post(this.$store.state.ruta +"api/usuario/ingresar", this.login)
         .then((response) => {
           return response.data;
         })
@@ -68,8 +68,8 @@ export default {
             this.$store.dispatch("guardarToken",data.tokenReturn );//se guarda el token en la tienda
             this.$router.push({name: 'ListarClientes'});
           swal(
-            "Login Correcto",
-            `Los datos son correctos, bienvenido! usuario`,
+            "¡Hola!",
+            this.$store.state.user.nombre ,
             "success"
           );
           console.log(data);

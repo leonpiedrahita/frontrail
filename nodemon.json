@@ -1,5 +1,5 @@
 {
     "env": {
-        "RUTA": "http://localhost:8080/"
+        "RUTA": "http://localhost:3000/"
     }
 }

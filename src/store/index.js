@@ -13,7 +13,8 @@ export default new Vuex.Store({
         existe: 0,
         ubicacion:'',
         icono:'',
-        color:''
+        color:'',
+        ruta:'http://localhost:3000/'
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme

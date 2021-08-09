@@ -398,7 +398,7 @@ export default {
     listar() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get("http://localhost:3000/api/cliente/listar", {
+        .get(this.$store.state.ruta +"api/cliente/listar", {
           headers: {
             token: this.$store.state.token,
           },
@@ -476,7 +476,7 @@ export default {
       this.Editarcliente = false;
       axios
         .patch(
-          "http://localhost:3000/api/cliente/actualizar/" + this.editedItem._id,
+          this.$store.state.ruta +"api/cliente/actualizar/" + this.editedItem._id,
           {
             nombre: this.editedItem.nombre,
             nit: this.editedItem.nit,
@@ -514,7 +514,7 @@ export default {
         this.Agregarcliente = false;
         axios
           .post(
-            "http://localhost:3000/api/cliente/registrar/",
+            this.$store.state.ruta +"api/cliente/registrar/",
             {
               nombre: this.editedItem.nombre,
               nit: this.editedItem.nit,
@@ -542,7 +542,7 @@ export default {
       //Editar categoria
       axios
         .patch(
-          "http://localhost:3000/api/cliente/agregarsede/" +
+          this.$store.state.ruta +"api/cliente/agregarsede/" +
             this.editedItem._id,
           {
             nombre: this.editedItem2.nombre,
@@ -568,7 +568,7 @@ export default {
     save3() {
       axios
         .patch(
-          "http://localhost:3000/api/cliente/eliminarsede/",
+          this.$store.state.ruta +"api/cliente/eliminarsede/",
           {
             nombre: this.editedItem2.nombre,
             direccion: this.editedItem2.direccion,

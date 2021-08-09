@@ -411,7 +411,7 @@ export default {
     listar() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get("http://localhost:3000/api/equipo/listar")
+        .get(this.$store.state.ruta +"api/equipo/listar")
         .then((response) => {
           this.equipos = response.data; //el this es porque no es propia de la funcion sino de l componente
           this.cargando = false;
@@ -471,7 +471,7 @@ export default {
       } else {
         axios
           .post(
-            "http://localhost:3000/api/equipo/registrar/",
+            this.$store.state.ruta +"api/equipo/registrar/",
             {
               nuevoequipo: this.nuevoequipo,
             },
@@ -505,7 +505,7 @@ export default {
         this.Agregarcliente = true;
         this.dialog2 = true;
         axios
-          .get("http://localhost:3000/api/cliente/listar", {
+          .get(this.$store.state.ruta +"api/cliente/listar", {
             headers: {
               token: this.$store.state.token,
             },
@@ -522,7 +522,7 @@ export default {
             return error;
           });
         axios
-          .get("http://localhost:3000/api/refequipo/listar")
+          .get(this.$store.state.ruta +"api/refequipo/listar")
           .then((response) => {
             this.refequipos = response.data; //el this es porque no es propia de la funcion sino de l componente
             this.refequipos = this.refequipos.map((equipo) => ({

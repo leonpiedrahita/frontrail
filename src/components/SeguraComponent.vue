@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-app-bar app :class= this.$store.state.color >
-      <v-app-bar-nav-icon class="mr-5" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon class="mr-1" @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title class="pa-0"
         ><v-icon medium class="mb-1 mr-1">{{ this.$store.state.icono }}</v-icon
@@ -12,7 +12,7 @@
       >
      
       <v-toolbar-title
-        >
+        class="mostrar">
         {{ this.$store.state.user.nombre }}</v-toolbar-title
       >
       
@@ -87,6 +87,7 @@ export default {
       drawer: null,
       selectedItem: 1,
       
+      
     };
   },
   beforeCreate() {
@@ -94,7 +95,10 @@ export default {
     if (this.$store.state.existe === 0) {
       this.$router.push({ name: "Login" });
     }
+    
+
   },
+
   methods: {
     salir() {
       this.$store.dispatch("salir");
@@ -105,6 +109,14 @@ export default {
 <style>
 .margen {
   padding: 0px !important;
+}
+.mostrar{
+  width:auto
+}
+@media (max-width: 500px) {
+.mostrar{
+  width: 0;
+}
 }
 
 

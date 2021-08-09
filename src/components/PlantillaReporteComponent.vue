@@ -1,5 +1,5 @@
 <template>
-  <div id="body">
+  <div id="body" class="margentotal">
     <div class="paddingfilas">
       <div class="gridencabezado titulo principal negrita">
         <div><img class="miimagen" /></div>
@@ -37,7 +37,7 @@
       </div>
       <div class="grid principal" fluid>
         <div class="gridparejas">
-          <div class="subtitulonegrita">Nombre/Razón social :</div>
+          <div class="subtitulonegrita">Nombre/R. Social :</div>
           <div class="dato">{{reporte.nombrecliente}}</div>
         </div>
         <div class="gridparejas">
@@ -129,24 +129,24 @@
           <div class="lafirma">
             <img :src="reporte.firmacliente" style="max-width: 50%" />
           </div>
-          <div class="nombrefirma">123456789</div>
+          <div class="nombrefirma">{{reporte.profesionalcliente}}</div>
         </div>
         <div class="gridfirma">
           <div class="lafirma">
             <img
-              :src="reporte.firmacliente"
+              :src="reporte.firmaingeniero"
               style="max-width: 50%"
               class="imagenfirma"
             />
           </div>
-          <div class="nombrefirma">123456789</div>
+          <div class="nombrefirma">{{reporte.ingeniero}}</div>
         </div>
       </div>
     </div>
     <pre>
-       <pre>
-        {{$data.reporte}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
+       <!-- <pre> -->
+        <!-- {{$data.reporte}} --> <!-- para imprimir las categorias en pantalla -->
+    <!-- </pre> -->
     
   </pre>
   </div>
@@ -183,6 +183,7 @@ export default {
     repuestos:"",
     observaciones:"",
       firmacliente:"",
+      firmaingeniero:"",
       ingeniero:"",
     },
    
@@ -192,7 +193,9 @@ export default {
   },
   methods: {
     listar() {
-      axios.get('http://localhost:3000/api/reporte/listaruno/60a30b160c50973d14744878')
+      /* axios.get('http://localhost:3000/api/reporte/listaruno/61106575e0d7ee0b980450fe') */
+      axios.get(this.$store.state.ruta + 'api/reporte/listaruno/61106575e0d7ee0b980450fe')
+      
       .then(
         response =>{
           this.reporte = response.data;
@@ -207,6 +210,10 @@ export default {
 };
 </script>
 <style >
+.margentotal{
+  margin-left: 2%;
+  margin-right: 2%;
+}
 .lafirma {
   height: 100%;
   width: 100%;
@@ -348,7 +355,10 @@ export default {
 }
 
 @media (max-width: 767px) {
-  
+  .margentotal{
+  margin-left: 0%;
+  margin-right: 0%;
+}
   
   .gridencabezado  > div{
   height: 46px;

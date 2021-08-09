@@ -1,7 +1,7 @@
 <template>
   <form>
     <v-container>
-     <v-divider></v-divider>
+      <v-divider class="mb-5 mt-5"></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Informacion del equipo :</div>
@@ -41,7 +41,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-
+      <v-divider class="mb-5 mt-5"></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Informacion del cliente :</div>
@@ -82,7 +82,7 @@
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
-            v-model="reporte.nombredelprofesional"
+            v-model="reporte.profesionalcliente"
             label="Nombre del profesional"
             required
             :rules="[(v) => !!v || 'Campo Requerido']"
@@ -90,13 +90,14 @@
         </v-col>
         <v-col cols="12" lg="6">
           <v-text-field
-            v-model="reporte.telefonodelprofesional"
+            v-model="reporte.telefonocliente"
             :rules="[(v) => !!v || 'Campo Requerido']"
             label="Telefono del Profesional"
             required
           ></v-text-field>
         </v-col>
       </v-row>
+      <v-divider class="mb-5 mt-5"></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Detalles de la asistencia :</div>
@@ -174,6 +175,7 @@
           </v-menu>
         </v-col>
       </v-row>
+      <v-divider class="mb-5 mt-5"></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Fallas reportada / Hallazgos :</div>
@@ -195,6 +197,7 @@
           ></v-textarea>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Actividades realizadas :</div>
@@ -216,6 +219,7 @@
           ></v-textarea>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Pruebas de aceptación :</div>
@@ -237,6 +241,7 @@
           ></v-textarea>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Repuestos utilizados :</div>
@@ -258,6 +263,7 @@
           ></v-textarea>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="12" align-self="center">
           <div class="gridtitulo">Observaciones / Recomendaciones :</div>
@@ -279,6 +285,7 @@
           ></v-textarea>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="12" lg="6" align="center">
           <div class="lafirma">
@@ -290,6 +297,11 @@
             class="centered-input"
           ></v-text-field>
           <p disabled class="centered-input">Recibe a satisfacción</p>
+          <v-col cols="6" lg="5" align="center">
+          <v-btn class="blue darken-1 ma-2" @click="submit"
+            >Firma Cliente</v-btn
+          >
+          </v-col>
         </v-col>
         <v-col cols="12" lg="6" align="center">
           <div class="lafirma">
@@ -301,16 +313,28 @@
             class="centered-input"
           ></v-text-field>
           <p disabled class="centered-input">Responsable del soporte</p>
+                <v-card-actions >
+
+                          <v-col cols="12" lg="12" align="center">
+          
+          <v-btn class="blue darken-1 ma-1" @click="guardarReporte"> Guardar </v-btn>
+          <v-btn class="blue darken-1 ma-1" @click="save">
+            Guardar y Finalizar
+          </v-btn>
+        </v-col>
+
+      </v-card-actions>
+
         </v-col>
       </v-row>
-      <v-dialog v-model="dialogofirma" max-width="450px" >
+      <v-dialog v-model="dialogofirma" max-width="450px">
         <v-card>
           <v-card-title>
             <span class="headline">Firma Cliente</span>
           </v-card-title>
           <v-card-text>
             <div class="container align-center">
-              <div class="col-12 justify-center" max-width="450px"  >
+              <div class="col-12 justify-center" max-width="450px">
                 <VueSignaturePad
                   id="signature"
                   width="350px"
@@ -333,23 +357,19 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-       <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-col cols="12" lg="6" align="center">
-      <v-btn class="blue darken-1 ma-2" @click="submit">Firma Cliente</v-btn>
-      <v-btn class="blue darken-1 ma-2" @click="save"> Guardar </v-btn>
-      <v-btn class="blue darken-1 ma-2" @click="save"> Guardar y Finalizar </v-btn>
-      </v-col>
+      
+      <v-card-actions >
+
+        
+
       </v-card-actions>
     </v-container>
 
-    <pre>
+    <!-- <pre> -->
   <!-- para imprimir las categorias en pantalla -->
 <!--  {{reporte}} -->
-    </pre>
-    <pre>
-       <!-- para imprimir las categorias en pantalla -->
-    </pre>
+    <!-- </pre> -->
+
   </form>
 </template>
 <script>
@@ -376,7 +396,6 @@ export default {
     dialogofirma: false,
     options: {
       penColor: "black",
-      
     },
     name: "",
     email: "",
@@ -445,6 +464,8 @@ export default {
       nitcliente: "",
       sedecliente: "",
       direccioncliente: "",
+      profesionalcliente:"",
+      telefonocliente:"",
       hallazgos: "",
       actividades: "",
       pruebas: "",
@@ -493,7 +514,6 @@ export default {
     this.buscarfirma();
     this.reporte.ingeniero = this.$store.state.user.nombre;
     this.reporte.firmaingeniero = this.$store.state.user.firma;
-    
   },
   methods: {
     submit() {
@@ -505,7 +525,7 @@ export default {
       this.reporte.infoequipo.nombre = this.equipo.nombre;
       this.reporte.infoequipo.serie = this.equipo.serie;
       this.reporte.infoequipo.marca = this.equipo.marca;
-      this.reporte.propietario = this.equipo.propietario;
+      this.reporte.propietario = this.equipo.propietario.nombre;
       this.reporte.nombrecliente = this.equipo.cliente.nombre;
       this.reporte.nitcliente = this.equipo.cliente.nit;
       this.reporte.sedecliente = this.equipo.ubicacionnombre;
@@ -516,7 +536,7 @@ export default {
     buscarfirma() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get("http://localhost:3000/api/firma/buscar", {
+        .get(this.$store.state.ruta +"api/firma/buscar", {
           headers: {
             token: this.$store.state.token,
           },
@@ -540,12 +560,33 @@ export default {
       this.reporte.firmacliente = data;
       this.dialogofirma = false;
     },
+    guardarReporte(){
+              axios
+          .post(
+            this.$store.state.ruta +"api/reporte/registrar/",
+            {
+              reporte: this.reporte,
+            },
+            {
+              headers: {
+                token: this.$store.state.token,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+    }
   },
 };
 </script>
 
 <style scoped>
-
 .centered-input >>> input {
   text-align: center;
   font-family: Roboto, sans-serif;
