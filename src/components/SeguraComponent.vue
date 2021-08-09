@@ -33,7 +33,6 @@
               <v-list-item-title v-text="'Inicio'"></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-
           <v-list-group prepend-icon="mdi-file-table" no-action>
             <template v-slot:activator>
               <v-list-item>
