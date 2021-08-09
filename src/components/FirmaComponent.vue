@@ -1,41 +1,32 @@
 <template>
   <div id="app">
     <v-card>
-          <v-card-title>
-            <span class="headline">Firma Cliente</span>
-          </v-card-title>
-          
-           
-              <div class="container align-center">
-                
-                  <div class="col-12 justify-center">
-                    <VueSignaturePad
-                    
-                      id="signature"
-                      width="350px"
-                      height="200px"
-                      ref="signaturePad"
-                      :options="options"
-                    />
-                  </div>
-               
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  
-                    <v-btn class="blue darken-1" @click="undo">
-                      Deshacer
-                    </v-btn>
-                  <v-spacer></v-spacer>
-                  
-                    <v-btn class="blue darken-1" @click="save">
-                      Guardar
-                    </v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </div>
-           
-          
-        </v-card>
+      <v-card-title>
+        <span class="headline">Firma Cliente</span>
+      </v-card-title>
+
+      <div class="container align-center">
+        <div class="col-12 justify-center">
+          <VueSignaturePad
+            id="signature"
+            width="350px"
+            height="200px"
+            ref="signaturePad"
+            :options="options"
+          />
+        </div>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn class="blue darken-1" @click="undo"> Deshacer </v-btn>
+          <v-spacer></v-spacer>
+
+          <v-btn class="blue darken-1" @click="save"> Guardar </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </div>
+    </v-card>
   </div>
 </template>
 
