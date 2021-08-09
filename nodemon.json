@@ -1,5 +1,6 @@
 {
     "env": {
-        "RUTA": "http://localhost:3000/"
+        
+        "BASE_URL":"https://quiet-plains-55064.herokuapp.com/"
     }
 }
