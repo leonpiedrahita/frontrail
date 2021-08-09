@@ -288,11 +288,18 @@
 
       <v-row>
         <v-col cols="12" lg="6" align="center">
-          <div class="lafirma">
-            <img class="lafirma" :src="reporte.firmacliente" />
+          <div class="lafirma"
+          >
+            <VueSignaturePad
+                  id="signature"
+                  width="350px"
+                  height="200px"
+                  ref="signaturePad"
+                  :options="options"
+                />
           </div>
           <v-text-field
-            v-model="reporte.nombredelprofesional"
+            v-model="reporte.profesionalcliente"
             disabled
             class="centered-input"
           ></v-text-field>
@@ -304,8 +311,9 @@
           </v-col>
         </v-col>
         <v-col cols="12" lg="6" align="center">
-          <div class="lafirma">
+          <div class="lafirma" >
             <img class="lafirma" :src="reporte.firmaingeniero" />
+            
           </div>
           <v-text-field
             v-model="reporte.ingeniero"
