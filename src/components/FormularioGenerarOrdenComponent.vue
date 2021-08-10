@@ -288,15 +288,14 @@
 
       <v-row>
         <v-col cols="12" lg="6" align="center">
-          <div class="lafirma"
-          >
+          <div class="lafirma">
             <VueSignaturePad
-                  id="signature"
-                  height="200px"
-                  width="350px"                  
-                  ref="signaturePad"
-                  :options="options"
-                />
+              id="signature"
+              height="200px"
+              width="350px"
+              ref="signaturePad"
+              :options="options"
+            />
           </div>
           <v-text-field
             v-model="reporte.profesionalcliente"
@@ -305,15 +304,19 @@
           ></v-text-field>
           <p disabled class="centered-input">Recibe a satisfacción</p>
           <v-col cols="6" lg="5" align="center">
-          <v-btn class="blue darken-1 ma-2" @click="submit"
-            >Firma Cliente</v-btn
-          >
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn class="blue darken-1" @click="undo">
+                Deshacer Firma
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
           </v-col>
         </v-col>
         <v-col cols="12" lg="6" align="center">
-          <div class="lafirma" >
+          <div class="lafirma">
             <img class="lafirma" :src="reporte.firmaingeniero" />
-            
           </div>
           <v-text-field
             v-model="reporte.ingeniero"
@@ -321,18 +324,36 @@
             class="centered-input"
           ></v-text-field>
           <p disabled class="centered-input">Responsable del soporte</p>
-                <v-card-actions >
-
-                          <v-col cols="12" lg="12" align="center">
-          
-          <v-btn class="blue darken-1 ma-1" @click="guardarReporte"> Guardar </v-btn>
-          <v-btn class="blue darken-1 ma-1" @click="save">
-            Guardar y Finalizar
-          </v-btn>
-        </v-col>
-
-      </v-card-actions>
-
+          <v-card-actions>
+            <v-col cols="12" lg="12" align="center">
+              <v-btn
+                class="blue darken-1 ma-1"
+                @click="guardarReporte"
+                :disabled="
+                  !(
+                    this.reporte.tipodeasistencia &&
+                    this.reporte.duracion &&
+                    this.reporte.fechadeinicio &&
+                    this.reporte.fechadefinalizacion &&                    
+                    this.reporte.profesionalcliente &&
+                    this.reporte.telefonocliente &&
+                    this.reporte.hallazgos &&
+                    this.reporte.actividades &&
+                    this.reporte.pruebas &&
+                    this.reporte.repuestos &&
+                    this.reporte.observaciones &&
+                    this.reporte.firmaingeniero &&
+                    this.reporte.ingeniero
+                  )
+                "
+              >
+                Guardar
+              </v-btn>
+              <v-btn class="blue darken-1 ma-1" @click="save">
+                Guardar y Finalizar
+              </v-btn>
+            </v-col>
+          </v-card-actions>
         </v-col>
       </v-row>
       <v-dialog v-model="dialogofirma" max-width="450px">
@@ -365,39 +386,26 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-          <v-dialog
-      v-model="esperaguardar"
-     
-      persistent
-      width="500"
-    >
-      <v-card
-        color="c4"
-        dark
-      >
-        <v-card-text>
-          Por favor espere...
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-      
-      <v-card-actions >
+      <v-dialog v-model="esperaguardar" persistent width="500">
+        <v-card color="c6" dark>
+          <v-card-text>
+            Por favor espere...
+            <v-progress-linear
+              indeterminate
+              color="white"
+              class="mb-0"
+            ></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
-        
-
-      </v-card-actions>
+      <v-card-actions> </v-card-actions>
     </v-container>
 
-    <!-- <pre> -->
-  <!-- para imprimir las categorias en pantalla -->
-<!--  {{reporte}} -->
-    <!-- </pre> -->
-
+    <pre>
+    <!-- para imprimir las categorias en pantalla -->
+     {{reporte}}
+    </pre>
   </form>
 </template>
 <script>
@@ -443,7 +451,7 @@ export default {
     fechadefinalizacion: new Date().toISOString().substr(0, 10),
     menu2: false,
     checkbox: false,
-    esperaguardar:false,
+    esperaguardar: false,
     equipo: {
       cliente: {
         sede: [
@@ -478,7 +486,6 @@ export default {
       marca: "",
     },
     reporte: {
-      numero: null,
       tipodeasistencia: null,
       duracion: null,
       fechadeinicio: "",
@@ -493,8 +500,8 @@ export default {
       nitcliente: "",
       sedecliente: "",
       direccioncliente: "",
-      profesionalcliente:"",
-      telefonocliente:"",
+      profesionalcliente: "",
+      telefonocliente: "",
       hallazgos: "",
       actividades: "",
       pruebas: "",
@@ -565,7 +572,7 @@ export default {
     buscarfirma() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get(this.$store.state.ruta +"api/firma/buscar", {
+        .get(this.$store.state.ruta + "api/firma/buscar", {
           headers: {
             token: this.$store.state.token,
           },
@@ -589,31 +596,31 @@ export default {
       this.reporte.firmacliente = data;
       this.dialogofirma = false;
     },
-    guardarReporte(){
-      this.esperaguardar=true;
-              axios
-          .post(
-            this.$store.state.ruta +"api/reporte/registrar/",
-            {
-              reporte: this.reporte,
+    guardarReporte() {
+      this.save();
+      this.esperaguardar = true;
+      axios
+        .post(
+          this.$store.state.ruta + "api/reporte/registrar/",
+          {
+            reporte: this.reporte,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
             },
-            {
-              headers: {
-                token: this.$store.state.token,
-              },
-            }
-          )
-          .then((response) => {
-            this.esperaguardar=false
-            console.log(response);
-            
-          })
-          .catch((error) => {
-            this.esperaguardar=false
-            console.log(error);
-            return error;
-          });
-    }
+          }
+        )
+        .then((response) => {
+          this.esperaguardar = false;
+          console.log(response);
+        })
+        .catch((error) => {
+          this.esperaguardar = false;
+          console.log(error);
+          return error;
+        });
+    },
   },
 };
 </script>
@@ -643,5 +650,4 @@ export default {
   background-origin: border-box;
   background-clip: content-box, border-box;
 }
-
 </style>

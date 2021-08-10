@@ -20,7 +20,7 @@
           <div class="dato">{{reporte.tipodeasistencia}}</div>
         </div>
         <div class="gridparejas">
-          <div class="subtitulonegrita">Duración :</div>
+          <div class="subtitulonegrita">Duración (Horas):</div>
           <div class="dato">{{reporte.duracion}}</div>
         </div>
         <div class="gridparejas">
@@ -194,7 +194,7 @@ export default {
   methods: {
     listar() {
       /* axios.get('http://localhost:3000/api/reporte/listaruno/61106575e0d7ee0b980450fe') */
-      axios.get(this.$store.state.ruta + 'api/reporte/listaruno/61106575e0d7ee0b980450fe')
+      axios.get(this.$store.state.ruta + 'api/reporte/listaruno/6111e07f896ec40015b5d4da')
       
       .then(
         response =>{
