@@ -292,8 +292,8 @@
           >
             <VueSignaturePad
                   id="signature"
-                  width="350px"
                   height="200px"
+                  width="350px"                  
                   ref="signaturePad"
                   :options="options"
                 />
@@ -619,4 +619,5 @@ export default {
   background-origin: border-box;
   background-clip: content-box, border-box;
 }
+
 </style>
