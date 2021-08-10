@@ -365,6 +365,26 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+          <v-dialog
+      v-model="esperaguardar"
+     
+      persistent
+      width="500"
+    >
+      <v-card
+        color="c4"
+        dark
+      >
+        <v-card-text>
+          Por favor espere...
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
       
       <v-card-actions >
 
@@ -423,6 +443,7 @@ export default {
     fechadefinalizacion: new Date().toISOString().substr(0, 10),
     menu2: false,
     checkbox: false,
+    esperaguardar:false,
     equipo: {
       cliente: {
         sede: [
@@ -569,6 +590,7 @@ export default {
       this.dialogofirma = false;
     },
     guardarReporte(){
+      this.esperaguardar=true;
               axios
           .post(
             this.$store.state.ruta +"api/reporte/registrar/",
@@ -582,10 +604,12 @@ export default {
             }
           )
           .then((response) => {
+            this.esperaguardar=false
             console.log(response);
             
           })
           .catch((error) => {
+            this.esperaguardar=false
             console.log(error);
             return error;
           });
