@@ -334,7 +334,7 @@
                     this.reporte.tipodeasistencia &&
                     this.reporte.duracion &&
                     this.reporte.fechadeinicio &&
-                    this.reporte.fechadefinalizacion &&                    
+                    this.reporte.fechadefinalizacion &&
                     this.reporte.profesionalcliente &&
                     this.reporte.telefonocliente &&
                     this.reporte.hallazgos &&
@@ -347,11 +347,11 @@
                   )
                 "
               >
-                Guardar
+                Guardar y finalizar
               </v-btn>
-              <v-btn class="blue darken-1 ma-1" @click="save">
+              <!--               <v-btn class="blue darken-1 ma-1" @click="save">
                 Guardar y Finalizar
-              </v-btn>
+              </v-btn> -->
             </v-col>
           </v-card-actions>
         </v-col>
@@ -551,6 +551,17 @@ export default {
     this.reporte.ingeniero = this.$store.state.user.nombre;
     this.reporte.firmaingeniero = this.$store.state.user.firma;
   },
+  beforeCreate() {
+    this.$store.dispatch("autoLogin");
+    if (this.$store.state.existe === 0) {
+      this.$router.push({ name: "Login" });
+    }
+    this.$store.dispatch("guardarUbicacion", {
+      ubicacion: "Equipos",
+      icono: "mdi-amplifier",
+      color: "c6",
+    });
+  },
   methods: {
     submit() {
       this.dialogofirma = true;
@@ -613,7 +624,12 @@ export default {
         )
         .then((response) => {
           this.esperaguardar = false;
+          const identificacion = response.data.identificacion;
           console.log(response);
+          this.$store.dispatch("guardarIdentificacion", {
+            id: identificacion
+          });
+          this.$router.push({ name: "Home" });
         })
         .catch((error) => {
           this.esperaguardar = false;

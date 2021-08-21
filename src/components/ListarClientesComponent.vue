@@ -33,8 +33,6 @@
       <!-- Encabledazo de la página -->
       <template v-slot:top>
         <v-toolbar flat>
-          
-
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -217,9 +215,6 @@
           </v-icon>
         </div>
       </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize"> Reset </v-btn>
-      </template>
     </v-data-table>
 
     <v-col cols="auto">
@@ -247,6 +242,18 @@
         </template>
       </v-dialog>
     </v-col>
+    <v-dialog v-model="esperarguardar" persistent width="500">
+      <v-card color="c6" dark>
+        <v-card-text>
+          Por favor espere...
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 <script>
@@ -264,6 +271,7 @@ export default {
     dialogDelete: false,
     search: "",
     cargando: true,
+    esperarguardar: false,
     encabezado: [
       {
         text: "Sede",
@@ -345,7 +353,12 @@ export default {
     defaultItem: {
       nit: "",
       nombre: "",
-      contactoprincipal: [{}],
+      contactoprincipal: [
+        {
+          nombre: "",
+          telefono: "",
+        },
+      ],
     },
     defaultItem2: {
       nombre: "",
@@ -380,11 +393,15 @@ export default {
     },
   },
   beforeCreate() {
-        this.$store.dispatch("autoLogin");
+    this.$store.dispatch("autoLogin");
     if (this.$store.state.existe === 0) {
       this.$router.push({ name: "Login" });
     }
-    this.$store.dispatch("guardarUbicacion", {ubicacion:"Clientes",icono: "mdi-account-box-multiple",color:'c5'});
+    this.$store.dispatch("guardarUbicacion", {
+      ubicacion: "Clientes",
+      icono: "mdi-account-box-multiple",
+      color: "c5",
+    });
   },
   created() {
     if (this.$store.state.existe === 0) {
@@ -398,7 +415,7 @@ export default {
     listar() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get(this.$store.state.ruta +"api/cliente/listar", {
+        .get(this.$store.state.ruta + "api/cliente/listar", {
           headers: {
             token: this.$store.state.token,
           },
@@ -453,7 +470,10 @@ export default {
     cerrareditar() {
       this.dialog = false;
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem.contactoprincipal[0].telefono="";
+          this.editedItem.contactoprincipal[0].nombre="";
+          this.editedItem.nit="";
+          this.editedItem.nombre="";
         this.Editarcliente = false;
         this.Agregarcliente = false;
 
@@ -476,7 +496,9 @@ export default {
       this.Editarcliente = false;
       axios
         .patch(
-          this.$store.state.ruta +"api/cliente/actualizar/" + this.editedItem._id,
+          this.$store.state.ruta +
+            "api/cliente/actualizar/" +
+            this.editedItem._id,
           {
             nombre: this.editedItem.nombre,
             nit: this.editedItem.nit,
@@ -501,6 +523,7 @@ export default {
     },
     agregarCliente() {
       //Editar categoria
+      this.esperarguardar = true;
       const encontrarnit = this.equipos.find(
         (registro) => registro.nit === this.editedItem.nit
       );
@@ -514,7 +537,7 @@ export default {
         this.Agregarcliente = false;
         axios
           .post(
-            this.$store.state.ruta +"api/cliente/registrar/",
+            this.$store.state.ruta + "api/cliente/registrar/",
             {
               nombre: this.editedItem.nombre,
               nit: this.editedItem.nit,
@@ -528,21 +551,22 @@ export default {
           )
           .then((response) => {
             console.log(response);
+            this.cerrareditar();
+            this.esperarguardar = false;
             this.listar();
           })
           .catch((error) => {
             console.log(error);
             return error;
           });
-
-        this.cerrareditar();
       }
     },
     agregarnuevasede() {
       //Editar categoria
       axios
         .patch(
-          this.$store.state.ruta +"api/cliente/agregarsede/" +
+          this.$store.state.ruta +
+            "api/cliente/agregarsede/" +
             this.editedItem._id,
           {
             nombre: this.editedItem2.nombre,
@@ -568,7 +592,7 @@ export default {
     save3() {
       axios
         .patch(
-          this.$store.state.ruta +"api/cliente/eliminarsede/",
+          this.$store.state.ruta + "api/cliente/eliminarsede/",
           {
             nombre: this.editedItem2.nombre,
             direccion: this.editedItem2.direccion,

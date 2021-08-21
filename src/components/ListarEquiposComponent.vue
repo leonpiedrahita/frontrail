@@ -1,7 +1,5 @@
 <template>
-
   <v-card>
-    
     <v-data-table
       :headers="headers"
       :items="equipos"
@@ -23,7 +21,9 @@
           ></v-text-field>
           <v-spacer></v-spacer>
 
-          <v-btn v-bind="size" @click="nuevoEquipo()"> Nuevo Equipo </v-btn>
+          <v-btn class="c6" v-bind="size" @click="nuevoEquipo()">
+            Nuevo Equipo
+          </v-btn>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog2" max-width="500px" persistent>
             <v-card>
@@ -119,6 +119,103 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog
+            v-model="dialogomodificarequipocliente"
+            max-width="500px"
+            persistent
+          >
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
+                        v-model="equipomodificado.nombre"
+                        label="Equipo"
+                        disabled
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
+                        v-model="equipomodificado.marca"
+                        label="Marca"
+                        disabled
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
+                        v-model="equipomodificado.serie"
+                        label="Número de Serie"
+                        disabled
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
+                        v-model="equipomodificado.propietario.nombre"
+                        :items="nombresclientes"
+                        label="Propietario"
+                        class="vs__search"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        >{{ nuevopropietario }}</v-autocomplete
+                      >
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
+                        v-model="equipomodificado.cliente.nombre"
+                        :items="nombresclientes"
+                        label="Cliente"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        >{{ nuevocliente }}</v-autocomplete
+                      >
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
+                        v-model="equipomodificado.ubicacionnombre"
+                        :items="ubicacionclientes"
+                        item-text="nombre"
+                        label="Sede"
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        required
+                      >
+                      </v-autocomplete>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close2">
+                  Cancelar
+                </v-btn>
+                <v-btn
+                  :disabled="
+                    !(
+                      equipomodificado.nombre &&
+                      equipomodificado.serie &&
+                      equipomodificado.propietario &&
+                      equipomodificado.cliente &&
+                      equipomodificado.ubicacionnombre
+                    )
+                  "
+                  color="blue darken-1"
+                  text
+                  @click="actualizarequipo"
+                >
+                  Modificar
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
               <v-card-title>
@@ -195,8 +292,13 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon medium @click="editItem(item)"> mdi-pencil </v-icon>
+      <template v-slot:[`item.editar`]="{ item }">
+        <v-icon medium @click="modificarEquipo(item)"> mdi-pencil </v-icon>
+      </template>
+      <template v-slot:[`item.crear`]="{ item }">
+        <v-icon medium @click="editItem(item)">
+          mdi-text-box-plus-outline
+        </v-icon>
       </template>
     </v-data-table>
     <pre>
@@ -226,6 +328,7 @@ export default {
   data: () => ({
     dialog: false,
     dialog2: false,
+    dialogomodificarequipocliente: false,
     dialogo: false,
     textodialogo: "",
     search: "",
@@ -248,10 +351,21 @@ export default {
         align: "center",
         value: "ubicacionnombre",
       },
-
+      {
+        text: "Estado",
+        align: "center",
+        value: "estado",
+        divider: true,
+      },
+      {
+        text: "Editar Equipo",
+        value: "editar",
+        sortable: false,
+        align: "center",
+      },
       {
         text: "Crear Reporte",
-        value: "actions",
+        value: "crear",
         sortable: false,
         align: "center",
       },
@@ -299,6 +413,23 @@ export default {
         direccion: "",
       },
     },
+    equipomodificado: {
+      nombre: "",
+      marca: "",
+      serie: "",
+      propietario: {
+        nombre: "",
+        id: "",
+      },
+      cliente: {
+        nombre: "",
+        id: "",
+      },
+      ubicacion: {
+        nombre: "",
+        direccion: "",
+      },
+    },
     nuevoequipopordefecto: {
       nombre: "",
       marca: {},
@@ -320,7 +451,12 @@ export default {
 
   computed: {
     formTitle() {
-      return "Generar Reporte";
+      if (this.dialog2) {
+        return "Nuevo equipo";
+      }
+      if (this.dialogomodificarequipocliente) {
+        return "Modificar equipo";
+      }
     },
     size() {
       const size = { xs: "x-small", sm: "small", lg: "large", xl: "x-large" }[
@@ -376,7 +512,10 @@ export default {
       });
       this.nuevoequipo.cliente.id = filtered[0];
       this.ubicacionclientes = this.clientes.map((cliente) => {
-        if (cliente.nombre === this.nuevoequipo.cliente.nombre) {
+        if (
+          cliente.nombre === this.equipomodificado.cliente.nombre ||
+          cliente.nombre === this.nuevoequipo.cliente.nombre
+        ) {
           return cliente.sede;
         }
       });
@@ -393,14 +532,14 @@ export default {
     },
   },
   beforeCreate() {
-        this.$store.dispatch("autoLogin");
+    this.$store.dispatch("autoLogin");
     if (this.$store.state.existe === 0) {
       this.$router.push({ name: "Login" });
     }
     this.$store.dispatch("guardarUbicacion", {
       ubicacion: "Equipos",
       icono: "mdi-amplifier",
-      color:'c6'
+      color: "c6",
     });
   },
   created() {
@@ -411,7 +550,7 @@ export default {
     listar() {
       //va a ir a mi backend y me traerá las peticiones de la base de datos
       axios
-        .get(this.$store.state.ruta +"api/equipo/listar")
+        .get(this.$store.state.ruta + "api/equipo/listar")
         .then((response) => {
           this.equipos = response.data; //el this es porque no es propia de la funcion sino de l componente
           this.cargando = false;
@@ -437,6 +576,7 @@ export default {
     },
     close2() {
       this.dialog2 = false;
+      this.dialogomodificarequipocliente = false;
       this.$nextTick(() => {
         this.nuevoequipo = this.nuevoequipopordefecto;
       });
@@ -471,7 +611,7 @@ export default {
       } else {
         axios
           .post(
-            this.$store.state.ruta +"api/equipo/registrar/",
+            this.$store.state.ruta + "api/equipo/registrar/",
             {
               nuevoequipo: this.nuevoequipo,
             },
@@ -496,16 +636,47 @@ export default {
       this.dialog2 = false;
       /* this.close(); */
     },
+    actualizarequipo() {
+     
+        axios
+          .patch(
+            this.$store.state.ruta + "api/equipo/actualizar/" + this.equipomodificado._id,
+            {
+              ubicacionnombre:this.equipomodificado.ubicacionnombre,
+              ubicaciondireccion:this.equipomodificado.ubicaciondireccion,
+              cliente:this.equipomodificado.cliente._id,
+              propietario:this.equipomodificado.propietario._id
+            },
+            {
+              headers: {
+                token: this.$store.state.token,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.$nextTick(() => {
+              this.nuevoequipo = this.nuevoequipopordefecto;
+            });
+            this.listar();
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      
+      this.dialogomodificarequipocliente = false;
+      /* this.close(); */
+    },
     nuevoEquipo() {
       this.$store.dispatch("autoLogin");
 
       if (this.$store.state.existe === 0) {
         this.$router.push({ name: "Login" });
       } else {
-        this.Agregarcliente = true;
         this.dialog2 = true;
         axios
-          .get(this.$store.state.ruta +"api/cliente/listar", {
+          .get(this.$store.state.ruta + "api/cliente/listar", {
             headers: {
               token: this.$store.state.token,
             },
@@ -522,7 +693,7 @@ export default {
             return error;
           });
         axios
-          .get(this.$store.state.ruta +"api/refequipo/listar")
+          .get(this.$store.state.ruta + "api/refequipo/listar")
           .then((response) => {
             this.refequipos = response.data; //el this es porque no es propia de la funcion sino de l componente
             this.refequipos = this.refequipos.map((equipo) => ({
@@ -531,6 +702,35 @@ export default {
             }));
             this.nombresequipos = this.refequipos.map(
               (nombres) => nombres.nombre
+            );
+          })
+          .catch((error) => {
+            //console.log(error);
+            return error;
+          });
+      }
+    },
+    modificarEquipo(item) {
+      this.$store.dispatch("autoLogin");
+
+      if (this.$store.state.existe === 0) {
+        this.$router.push({ name: "Login" });
+      } else {
+        this.equipomodificado = Object.assign({}, item);
+        console.log(item);
+        console.log(this.equipomodificado.marca);
+        this.dialogomodificarequipocliente = true;
+        axios
+          .get(this.$store.state.ruta + "api/cliente/listar", {
+            headers: {
+              token: this.$store.state.token,
+            },
+          })
+          .then((response) => {
+            this.clientes = response.data; //el this es porque no es propia de la funcion sino de l componente
+            /*           this.nombresclientes = this.clientes.map((cliente)=>({nombre:cliente.nombre,id:cliente._id,sede:cliente.sede}));
+             */ this.nombresclientes = this.clientes.map(
+              (cliente) => cliente.nombre
             );
           })
           .catch((error) => {

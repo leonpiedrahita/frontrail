@@ -194,7 +194,9 @@ export default {
   methods: {
     listar() {
       /* axios.get('http://localhost:3000/api/reporte/listaruno/61106575e0d7ee0b980450fe') */
-      axios.get(this.$store.state.ruta + 'api/reporte/listaruno/6111e07f896ec40015b5d4da')
+      console.log(this.$store.state.identificacion)
+      console.log(this.$store.state.ruta + 'api/reporte/listaruno/'+this.$store.state.identificacion)
+      axios.get(this.$store.state.ruta + 'api/reporte/listaruno/'+this.$store.state.identificacion)
       
       .then(
         response =>{

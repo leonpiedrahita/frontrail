@@ -14,8 +14,9 @@ export default new Vuex.Store({
         ubicacion:'',
         icono:'',
         color:'',
-        /* ruta:'http://localhost:3000/', */
-        ruta:'https://serene-inlet-85317.herokuapp.com/'
+        ruta:'http://localhost:3000/',
+       /*  ruta:'https://serene-inlet-85317.herokuapp.com/' */
+       identificacion:""
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme
@@ -32,6 +33,9 @@ export default new Vuex.Store({
             state.icono = icono
             state.color = color
         },
+        setIdentificacion(state,id){
+            state.identificacion=id
+        }
 
     },
     actions: {//Las acciones hacen los llamados a las mutaciones
@@ -74,6 +78,10 @@ export default new Vuex.Store({
         },
         guardarUbicacion({ commit }, {ubicacion, icono,color}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
             commit("setUbicacion", {ubicacion, icono,color});
+            
+        },
+        guardarIdentificacion({ commit }, identificacion) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
+            commit("setIdentificacion", identificacion.id);
             
         },
     }
