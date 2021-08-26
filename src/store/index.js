@@ -14,8 +14,8 @@ export default new Vuex.Store({
         ubicacion:'',
         icono:'',
         color:'',
-        ruta:'http://localhost:3000/',
-       /*  ruta:'https://serene-inlet-85317.herokuapp.com/' */
+        /* ruta:'http://localhost:3000/', */
+        ruta:'https://serene-inlet-85317.herokuapp.com/',
        identificacion:""
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
