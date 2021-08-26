@@ -402,10 +402,10 @@
       <v-card-actions> </v-card-actions>
     </v-container>
 
-    <pre>
-    <!-- para imprimir las categorias en pantalla -->
+    <!-- <pre>
+    
      {{reporte}}
-    </pre>
+    </pre> -->
   </form>
 </template>
 <script>

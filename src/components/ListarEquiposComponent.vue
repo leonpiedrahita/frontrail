@@ -163,7 +163,7 @@
                         class="vs__search"
                         required
                         :rules="[(v) => !!v || 'Campo Requerido']"
-                        >{{ nuevopropietario }}</v-autocomplete
+                        >{{ nuevopropietariomodificado }}</v-autocomplete
                       >
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
@@ -173,13 +173,13 @@
                         label="Cliente"
                         required
                         :rules="[(v) => !!v || 'Campo Requerido']"
-                        >{{ nuevocliente }}</v-autocomplete
+                        >{{ nuevoclientemodificado }}</v-autocomplete
                       >
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-autocomplete
                         v-model="equipomodificado.ubicacionnombre"
-                        :items="ubicacionclientes"
+                        :items="ubicacionclientesmodificado"
                         item-text="nombre"
                         label="Sede"
                         :rules="[(v) => !!v || 'Campo Requerido']"
@@ -301,25 +301,8 @@
         </v-icon>
       </template>
     </v-data-table>
-    <pre>
-        {{$data.nuevoequipo}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
-    <pre>----------</pre>
-    <pre>
-        {{$data.ubicacionclientes}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
-    <pre>-----------</pre>
-    <pre>
-        {{$data.refequipos}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
-    <pre>-----------</pre>
-    <pre>
-        {{$data.direccionclientes}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
-    <pre>----------</pre>
-    <pre>
-        {{$data.clientes}} <!-- para imprimir las categorias en pantalla -->
-    </pre>
+    <!-- <pre> {{$data.nuevoequipo}} </pre> -->
+
   </v-card>
 </template>
 <script>
@@ -378,6 +361,7 @@ export default {
     clientes: [],
     nombresclientes: [],
     ubicacionclientes: [],
+    ubicacionclientesmodificado:[],
     direccionclientes: [],
     sedeseleccionada: "",
     sedeactualizada: "",
@@ -490,7 +474,7 @@ export default {
 
     nuevopropietario: function () {
       // `this` apunta a la instancia vm
-      this.nuevoequipo.propietario.id = this.clientes.map((cliente) => {
+      this.nuevoequipo.propietario.id  = this.clientes.map((cliente) => {
         if (cliente.nombre === this.nuevoequipo.propietario.nombre) {
           return cliente._id;
         }
@@ -513,7 +497,6 @@ export default {
       this.nuevoequipo.cliente.id = filtered[0];
       this.ubicacionclientes = this.clientes.map((cliente) => {
         if (
-          cliente.nombre === this.equipomodificado.cliente.nombre ||
           cliente.nombre === this.nuevoequipo.cliente.nombre
         ) {
           return cliente.sede;
@@ -523,6 +506,41 @@ export default {
         return el != null;
       });
       this.ubicacionclientes = filtered[0];
+    },
+      nuevopropietariomodificado: function () {
+      // `this` apunta a la instancia vm
+      this.equipomodificado.propietario.id = this.clientes.map((cliente) => {
+        if (cliente.nombre === this.equipomodificado.propietario.nombre) {
+          return cliente._id;
+        }
+      });
+      var filtered = this.equipomodificado.propietario.id.filter(function (el) {
+        return el != null;
+      });
+      this.equipomodificado.propietario.id = filtered[0];
+    },
+    nuevoclientemodificado: function () {
+      // `this` apunta a la instancia vm
+      this.equipomodificado.cliente.id = this.clientes.map((cliente) => {
+        if (cliente.nombre === this.equipomodificado.cliente.nombre) {
+          return cliente._id;
+        }
+      });
+      var filtered = this.equipomodificado.cliente.id.filter(function (el) {
+        return el != null;
+      });
+      this.equipomodificado.cliente.id = filtered[0];
+      this.ubicacionclientesmodificado = this.clientes.map((cliente) => {
+        if (
+          cliente.nombre === this.equipomodificado.cliente.nombre
+        ) {
+          return cliente.sede;
+        }
+      });
+      var filtered = this.ubicacionclientesmodificado.filter(function (el) {
+        return el != null;
+      });
+      this.ubicacionclientesmodificado = filtered[0];
     },
   },
 
@@ -637,15 +655,14 @@ export default {
       /* this.close(); */
     },
     actualizarequipo() {
-     
         axios
           .patch(
             this.$store.state.ruta + "api/equipo/actualizar/" + this.equipomodificado._id,
             {
               ubicacionnombre:this.equipomodificado.ubicacionnombre,
               ubicaciondireccion:this.equipomodificado.ubicaciondireccion,
-              cliente:this.equipomodificado.cliente._id,
-              propietario:this.equipomodificado.propietario._id
+              cliente:this.equipomodificado.cliente.id,
+              propietario:this.equipomodificado.propietario.id
             },
             {
               headers: {
@@ -658,6 +675,7 @@ export default {
             this.$nextTick(() => {
               this.nuevoequipo = this.nuevoequipopordefecto;
             });
+            this.dialogomodificarequipocliente = false;
             this.listar();
           })
           .catch((error) => {
@@ -665,7 +683,7 @@ export default {
             return error;
           });
       
-      this.dialogomodificarequipocliente = false;
+      
       /* this.close(); */
     },
     nuevoEquipo() {
@@ -717,8 +735,7 @@ export default {
         this.$router.push({ name: "Login" });
       } else {
         this.equipomodificado = Object.assign({}, item);
-        console.log(item);
-        console.log(this.equipomodificado.marca);
+
         this.dialogomodificarequipocliente = true;
         axios
           .get(this.$store.state.ruta + "api/cliente/listar", {
