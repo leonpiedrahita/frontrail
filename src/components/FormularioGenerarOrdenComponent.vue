@@ -488,8 +488,8 @@ export default {
     reporte: {
       tipodeasistencia: null,
       duracion: null,
-      fechadeinicio: "",
-      fechadefinalizacion: "",
+      fechadeinicio: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      fechadefinalizacion: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       infoequipo: {
         nombre: "",
         serie: "",
@@ -642,6 +642,7 @@ export default {
 </script>
 
 <style scoped>
+
 .centered-input >>> input {
   text-align: center;
   font-family: Roboto, sans-serif;

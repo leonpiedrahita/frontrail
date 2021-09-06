@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="pa-2">
     <!-- se crea la data table prinecipal para listar los clientes -->
     <v-data-table
       :headers="headers"
@@ -400,7 +400,7 @@ export default {
     this.$store.dispatch("guardarUbicacion", {
       ubicacion: "Clientes",
       icono: "mdi-account-box-multiple",
-      color: "c5",
+      color: "c6",
     });
   },
   created() {

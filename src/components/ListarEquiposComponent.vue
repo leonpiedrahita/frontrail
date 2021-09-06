@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="pa-2">
     <v-data-table
       :headers="headers"
       :items="equipos"
@@ -53,6 +53,14 @@
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-text-field
+                        v-model="nuevoequipo.placadeinventario"
+                        label="Número de placa de inventario"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
                         v-model="nuevoequipo.serie"
                         label="Número de Serie"
                         required
@@ -91,6 +99,17 @@
                       >
                       </v-autocomplete>
                     </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
+                        v-model="nuevoequipo.tipodecontrato"
+                        :items="listacontratos"
+                        label="Tipo de contrato"
+                        class="vs__search"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        ></v-autocomplete
+                      >
+                    </v-col>
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -105,6 +124,8 @@
                     !(
                       nuevoequipo.nombre &&
                       nuevoequipo.serie &&
+                      nuevoequipo.placadeinventario &&
+                      nuevoequipo.tipodecontrato&&
                       nuevoequipo.propietario &&
                       nuevoequipo.cliente &&
                       nuevoequipo.ubicacion.nombre
@@ -149,6 +170,14 @@
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-text-field
+                        v-model="equipomodificado.placadeinventario"
+                        label="Número de placa de inventario"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field
                         v-model="equipomodificado.serie"
                         label="Número de Serie"
                         disabled
@@ -187,6 +216,17 @@
                       >
                       </v-autocomplete>
                     </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-autocomplete
+                        v-model="equipomodificado.tipodecontrato"
+                        :items="listacontratos"
+                        label="Tipo de contrato"
+                        class="vs__search"
+                        required
+                        :rules="[(v) => !!v || 'Campo Requerido']"
+                        ></v-autocomplete
+                      >
+                    </v-col>
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -201,6 +241,8 @@
                     !(
                       equipomodificado.nombre &&
                       equipomodificado.serie &&
+                      equipomodificado.placadeinventario &&
+                      equipomodificado.tipodecontrato &&
                       equipomodificado.propietario &&
                       equipomodificado.cliente &&
                       equipomodificado.ubicacionnombre
@@ -258,8 +300,21 @@
                 <v-btn color="blue darken-1" text @click="close">
                   Cancelar
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Generar
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="save"
+                  v-if="generarreporteseleccionado"
+                >
+                  Crear reporte
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="guardarGenerarOrden"
+                  v-if="generarordenseleccionado"
+                >
+                  Generar Orden
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -290,11 +345,48 @@
               </v-card>
             </template>
           </v-dialog>
+          <v-dialog v-model="dialogoetapa" max-width="500px" persistent>
+            <v-col cols="12">
+              <v-card class="pa-5"
+                ><v-select
+                  v-model="etapaautorizada"
+                  :items="listadeetapas"
+                  label="Siguiente paso"
+                  required
+                  :rules="[(v) => !!v || 'Campo Requerido']"
+                ></v-select>
+                <v-textarea v-model="observaciones"></v-textarea>
+                <v-card-actions
+                  ><v-btn class="primary" text @click="confirmarEtapa(0)"
+                    >Confirmar Etapa</v-btn
+                  ></v-card-actions
+                >
+              </v-card>
+            </v-col>
+          </v-dialog>
+          <v-dialog v-model="esperaguardar" persistent width="500">
+            <v-card color="c6" dark>
+              <v-card-text>
+                Por favor espere...
+                <v-progress-linear
+                  indeterminate
+                  color="white"
+                  class="mb-0"
+                ></v-progress-linear>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
       <template v-slot:[`item.editar`]="{ item }">
         <v-icon medium @click="modificarEquipo(item)"> mdi-pencil </v-icon>
       </template>
+      <template v-slot:[`item.generarorden`]="{ item }">
+        <v-icon medium @click="generarOrden(item)">
+          mdi-vector-polyline-plus
+        </v-icon>
+      </template>
+
       <template v-slot:[`item.crear`]="{ item }">
         <v-icon medium @click="editItem(item)">
           mdi-text-box-plus-outline
@@ -302,7 +394,6 @@
       </template>
     </v-data-table>
     <!-- <pre> {{$data.nuevoequipo}} </pre> -->
-
   </v-card>
 </template>
 <script>
@@ -310,15 +401,38 @@ export default {
   name: "ListarEquipos",
   data: () => ({
     dialog: false,
+    generarordenseleccionado: false,
+    generarreporteseleccionado: false,
     dialog2: false,
     dialogomodificarequipocliente: false,
     dialogo: false,
+    dialogoetapa: false,
     textodialogo: "",
     search: "",
     cargando: true,
+    esperaguardar: false,
+    etapaautorizada: "",
+    observaciones: "",
+    listadeetapas: [],
+    listacontratos:[
+      "Sin asignar",
+      "Comodato",
+      "Venta",
+      "Alquiler"
+    ],
+    ordenes: [
+      {
+        etapaactual: 1, // Paso actual
+        ultimaetapa: 1, //Cantidad máxima de pasos
+        etapas: [],
+        equipo: {},
+        estado:"Bloqueado"
+      },
+    ],
     headers: [
       { text: "Nombre del dispositivo", value: "nombre", align: "center" },
       { text: "Número de serie", value: "serie", align: "center" },
+      { text: "N. Inventario", value: "placadeinventario", align: "center" },
       {
         text: "Propietario",
         align: "center",
@@ -334,6 +448,7 @@ export default {
         align: "center",
         value: "ubicacionnombre",
       },
+      { text: "T. Contrato", value: "tipodecontrato", align: "center" },
       {
         text: "Estado",
         align: "center",
@@ -343,6 +458,12 @@ export default {
       {
         text: "Editar Equipo",
         value: "editar",
+        sortable: false,
+        align: "center",
+      },
+      {
+        text: "Generar orden",
+        value: "generarorden",
         sortable: false,
         align: "center",
       },
@@ -361,10 +482,11 @@ export default {
     clientes: [],
     nombresclientes: [],
     ubicacionclientes: [],
-    ubicacionclientesmodificado:[],
+    ubicacionclientesmodificado: [],
     direccionclientes: [],
     sedeseleccionada: "",
     sedeactualizada: "",
+    inventarioactual:"",
     prueba: {},
     editedItem: {
       cliente: {
@@ -384,6 +506,8 @@ export default {
       nombre: "",
       marca: {},
       serie: "",
+      placadeinventario:"",
+      tipodecontrato:"",
       propietario: {
         nombre: "",
         id: "",
@@ -401,6 +525,8 @@ export default {
       nombre: "",
       marca: "",
       serie: "",
+      placadeinventario:"",
+      tipodecontrato:"",
       propietario: {
         nombre: "",
         id: "",
@@ -474,7 +600,7 @@ export default {
 
     nuevopropietario: function () {
       // `this` apunta a la instancia vm
-      this.nuevoequipo.propietario.id  = this.clientes.map((cliente) => {
+      this.nuevoequipo.propietario.id = this.clientes.map((cliente) => {
         if (cliente.nombre === this.nuevoequipo.propietario.nombre) {
           return cliente._id;
         }
@@ -496,9 +622,7 @@ export default {
       });
       this.nuevoequipo.cliente.id = filtered[0];
       this.ubicacionclientes = this.clientes.map((cliente) => {
-        if (
-          cliente.nombre === this.nuevoequipo.cliente.nombre
-        ) {
+        if (cliente.nombre === this.nuevoequipo.cliente.nombre) {
           return cliente.sede;
         }
       });
@@ -507,7 +631,7 @@ export default {
       });
       this.ubicacionclientes = filtered[0];
     },
-      nuevopropietariomodificado: function () {
+    nuevopropietariomodificado: function () {
       // `this` apunta a la instancia vm
       this.equipomodificado.propietario.id = this.clientes.map((cliente) => {
         if (cliente.nombre === this.equipomodificado.propietario.nombre) {
@@ -531,9 +655,7 @@ export default {
       });
       this.equipomodificado.cliente.id = filtered[0];
       this.ubicacionclientesmodificado = this.clientes.map((cliente) => {
-        if (
-          cliente.nombre === this.equipomodificado.cliente.nombre
-        ) {
+        if (cliente.nombre === this.equipomodificado.cliente.nombre) {
           return cliente.sede;
         }
       });
@@ -555,13 +677,19 @@ export default {
       this.$router.push({ name: "Login" });
     }
     this.$store.dispatch("guardarUbicacion", {
-      ubicacion: "Equipos",
+      ubicacion: "Equipos existentes",
       icono: "mdi-amplifier",
       color: "c6",
     });
   },
   created() {
-    this.listar();
+    this.$store.dispatch("autoLogin");
+    if (this.$store.state.existe === 0) {
+      this.$router.push({ name: "Login" });
+    } else {
+      this.asignarLista();
+      this.listar();
+    }
   },
 
   methods: {
@@ -582,11 +710,20 @@ export default {
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      this.generarreporteseleccionado = true;
+      this.dialog = true;
+    },
+    generarOrden(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.generarordenseleccionado = true;
       this.dialog = true;
     },
 
     close() {
       this.dialog = false;
+      this.generarreporteseleccionado = false;
+      this.generarordenseleccionado = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -603,9 +740,14 @@ export default {
     save() {
       localStorage.setItem("equipo", JSON.stringify(this.editedItem));
       this.close();
-      this.prueba = localStorage.getItem("equipo");
+      this.generarreporteseleccionado = false;
       this.$router.push({ name: "FormularioGenerarOrden" });
     },
+    guardarGenerarOrden() {
+      this.dialogoetapa = true;
+      this.generarordenseleccionado = false;
+    },
+
     save2() {
       this.nuevoequipo.ubicacion.direccion = this.ubicacionclientes.map(
         (equipo) => {
@@ -622,11 +764,19 @@ export default {
       const encontrarserie = this.equipos.find(
         (registro) => registro.serie === this.nuevoequipo.serie
       );
+      const encontrarinventario = this.equipos.find(
+        (registro) => registro.placadeinventario === this.nuevoequipo.placadeinventario
+      );
 
       if (encontrarserie) {
         this.textodialogo = "El número de serie ya se encuentra registrado";
         this.dialogo = true;
-      } else {
+      } 
+      else if(encontrarinventario){
+      this.textodialogo = "El número de inventario ya se encuentra registrado";
+        this.dialogo = true;
+      }
+      else {
         axios
           .post(
             this.$store.state.ruta + "api/equipo/registrar/",
@@ -652,38 +802,89 @@ export default {
           });
       }
       this.dialog2 = false;
-      /* this.close(); */
+      this.close();
     },
     actualizarequipo() {
-        axios
-          .patch(
-            this.$store.state.ruta + "api/equipo/actualizar/" + this.equipomodificado._id,
-            {
-              ubicacionnombre:this.equipomodificado.ubicacionnombre,
-              ubicaciondireccion:this.equipomodificado.ubicaciondireccion,
-              cliente:this.equipomodificado.cliente.id,
-              propietario:this.equipomodificado.propietario.id
+      
+      if(this.inventarioactual === this.equipomodificado.placadeinventario){
+        
+      axios
+        .patch(
+          this.$store.state.ruta +
+            "api/equipo/actualizar/" +
+            this.equipomodificado._id,
+          {
+            ubicacionnombre: this.equipomodificado.ubicacionnombre,
+            ubicaciondireccion: this.equipomodificado.ubicaciondireccion,
+            cliente: this.equipomodificado.cliente.id,
+            propietario: this.equipomodificado.propietario.id,
+            placadeinventario: this.equipomodificado.placadeinventario,
+            tipodecontrato: this.equipomodificado.tipodecontrato,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
             },
-            {
-              headers: {
-                token: this.$store.state.token,
-              },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.$nextTick(() => {
-              this.nuevoequipo = this.nuevoequipopordefecto;
-            });
-            this.dialogomodificarequipocliente = false;
-            this.listar();
-          })
-          .catch((error) => {
-            console.log(error);
-            return error;
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.$nextTick(() => {
+            this.nuevoequipo = this.nuevoequipopordefecto;
           });
+          this.dialogomodificarequipocliente = false;
+          this.listar();
+        })
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
       
-      
+      }
+      else{
+      const encontrarinventario = this.equipos.find(
+        (registro) => registro.placadeinventario === this.equipomodificado.placadeinventario
+      );
+       if(encontrarinventario){
+      this.textodialogo = "El número de inventario ya se encuentra registrado";
+        this.dialogo = true;
+      }
+      else{
+      axios
+        .patch(
+          this.$store.state.ruta +
+            "api/equipo/actualizar/" +
+            this.equipomodificado._id,
+          {
+            ubicacionnombre: this.equipomodificado.ubicacionnombre,
+            ubicaciondireccion: this.equipomodificado.ubicaciondireccion,
+            cliente: this.equipomodificado.cliente.id,
+            propietario: this.equipomodificado.propietario.id,
+            placadeinventario: this.equipomodificado.placadeinventario,
+            tipodecontrato: this.equipomodificado.tipodecontrato,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.$nextTick(() => {
+            this.nuevoequipo = this.nuevoequipopordefecto;
+          });
+          this.dialogomodificarequipocliente = false;
+          this.listar();
+        })
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
+      }
+      }
+     
+
       /* this.close(); */
     },
     nuevoEquipo() {
@@ -735,6 +936,7 @@ export default {
         this.$router.push({ name: "Login" });
       } else {
         this.equipomodificado = Object.assign({}, item);
+        this.inventarioactual=this.equipomodificado.placadeinventario
 
         this.dialogomodificarequipocliente = true;
         axios
@@ -755,6 +957,137 @@ export default {
             return error;
           });
       }
+    },
+    asignarLista() {
+      if (this.$store.state.user.rol === "administrador") {
+        this.listadeetapas = [
+          "Llegada de equipo",
+          "Cotización solicitada",
+          "Cotización aprobada",
+          "Repuestos solicitados",
+          "Repuestos aprobados para entrega",
+          "Repuestos entregados",
+          "Soporte realizado",
+          "Equipo despachado",
+          "Entrenamiento realizado",
+        ];
+      } else if (this.$store.state.user.rol === "soporte") {
+        this.listadeetapas = [
+          "Cotización solicitada",
+          "Repuestos solicitados",
+          "Soporte realizado",
+          "Equipo despachado",
+          "Entrenamiento realizado",
+        ];
+      } else if (this.$store.state.user.rol === "bodega") {
+        this.listadeetapas = [
+          "Llegada de equipo",
+          "Repuestos entregados",
+          "Equipo despachado",
+        ];
+      } else if (this.$store.state.user.rol === "facturación") {
+        this.listadeetapas = ["Repuestos aprobados"];
+      } else if (this.$store.state.user.rol === "cotizaciones") {
+        this.listadeetapas = ["Cotización aprobada"];
+      } else if (this.$store.state.user.rol === "facturación") {
+        this.listadeetapas = ["Repuestos aprobados para entrega"];
+      } else if (this.$store.state.user.rol === "asesor") {
+        this.listadeetapas = [
+          "Cotización solicitada",
+          "Entrenamiento realizado",
+        ];
+      } else if (this.$store.state.user.rol === "cartera") {
+        this.listadeetapas = [];
+      }
+    },
+    confirmarEtapa(m) {
+      this.$store.dispatch("autoLogin");
+      if (this.$store.state.existe === 0) {
+        this.$router.push({ name: "Login" });
+      } else {
+        var today = new Date();
+        var date =
+          "(" +
+          today.getDate() +
+          "-" +
+          (today.getMonth() + 1) +
+          "-" +
+          today.getFullYear() +
+          ")";
+
+        this.ordenes[m].etapas.push({
+          nombre: this.etapaautorizada,
+          comentario: this.observaciones,
+          responsable: this.$store.state.user.nombre,
+          hora: date,
+        });
+        this.ordenes[m].etapaactual++;
+        this.ordenes[m].ultimaetapa++;
+
+        this.esperaguardar = true;
+        axios
+          .post(
+            this.$store.state.ruta + "api/orden/registrar/",
+            {
+              equipo: this.editedItem,
+              etapas: this.ordenes[0].etapas,
+            },
+            {
+              headers: {
+                token: this.$store.state.token,
+              },
+            }
+          )
+          .then((response) => {
+            this.esperaguardar = false;
+            this.dialogoetapa = false;
+            this.dialog = false;
+            this.$store.dispatch("guardarOrdenesEquipo", {
+              ordenes: this.ordenes[0],
+              equipo:this.editedItem,
+              idorden:response.data.result._id
+            });
+            
+            this.close();
+            console.log(response);
+            this.$router.push({name: 'Pasos'});
+          })
+          .catch((error) => {
+            this.esperaguardar = false;
+            console.log(error);
+            return error;
+          });
+      }
+    },
+    guardarReporte() {
+      this.esperaguardar = true;
+      axios
+        .post(
+          this.$store.state.ruta + "api/reporte/registrar/",
+          {
+            reporte: this.reporte,
+          },
+          {
+            headers: {
+              token: this.$store.state.token,
+            },
+          }
+        )
+        .then((response) => {
+          this.esperaguardar = false;
+
+          const identificacion = response.data.identificacion;
+          console.log(response);
+          this.$store.dispatch("guardarIdentificacion", {
+            id: identificacion,
+          });
+          this.$router.push({ name: "Home" });
+        })
+        .catch((error) => {
+          this.esperaguardar = false;
+          console.log(error);
+          return error;
+        });
     },
   },
   actualizarsede() {

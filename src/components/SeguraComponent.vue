@@ -1,21 +1,21 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app :class= this.$store.state.color >
-      <v-app-bar-nav-icon class="mr-1" @click="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar app :class="this.$store.state.color">
+      <v-app-bar-nav-icon
+        class="mr-1"
+        @click="drawer = !drawer"
+      ></v-app-bar-nav-icon>
 
       <v-toolbar-title class="pa-0"
-        ><v-icon medium class="mb-1 mr-1">{{ this.$store.state.icono }}</v-icon
-        >
+        ><v-icon medium class="mb-1 mr-1">{{ this.$store.state.icono }}</v-icon>
         {{ this.$store.state.ubicacion }}</v-toolbar-title
       >
-      <v-spacer></v-spacer
-      >
-     
-      <v-toolbar-title
-        class="mostrar">
+      <v-spacer></v-spacer>
+
+      <v-toolbar-title class="mostrar">
         {{ this.$store.state.user.nombre }}</v-toolbar-title
       >
-      
+
       <v-btn icon class="mr-5 ml-5" @click="salir()">
         <v-icon> mdi-logout</v-icon>
         <span> </span>
@@ -33,23 +33,43 @@
               <v-list-item-title v-text="'Inicio'"></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-group prepend-icon="mdi-file-table" no-action>
+
+          <v-list-item :to="{ name: 'ListarClientes' }">
+            <v-list-item-icon>
+              <v-icon>mdi-account-box-multiple</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title> Clientes </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-group no-action>
             <template v-slot:activator>
-              <v-list-item>
-                <v-list-item-title> Administrar </v-list-item-title>
-              </v-list-item>
-            </template>
-            <v-list-item :to="{ name: 'ListarClientes' }">
+              <v-list-item-icon>
+                <v-icon>mdi-amplifier</v-icon>
+              </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title> Clientes </v-list-item-title>
+                <v-list-item-title>Equipos</v-list-item-title>
               </v-list-item-content>
-            </v-list-item>
+            </template>
             <v-list-item :to="{ name: 'ListarEquipos' }">
               <v-list-item-content>
-                <v-list-item-title> Equipos </v-list-item-title>
+                <v-list-item-title> Existentes </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item :to="{ name: 'RefEquipos' }">
+              <v-list-item-content>
+                <v-list-item-title> Referencias </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
+          <v-list-item :to="{ name: 'ListarOrdenes' }">
+            <v-list-item-icon>
+              <v-icon>mdi-vector-circle</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title> Ordenes </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
           <v-list-group
             v-if="this.$store.state.user.rol === 'administrador'"
@@ -71,9 +91,8 @@
         </v-list></v-card
       >
     </v-navigation-drawer>
-    
+
     <v-main class="margen">
-      
       <router-view />
     </v-main>
   </v-app>
@@ -85,8 +104,6 @@ export default {
     return {
       drawer: null,
       selectedItem: 1,
-      
-      
     };
   },
   beforeCreate() {
@@ -94,8 +111,6 @@ export default {
     if (this.$store.state.existe === 0) {
       this.$router.push({ name: "Login" });
     }
-    
-
   },
 
   methods: {
@@ -109,14 +124,12 @@ export default {
 .margen {
   padding: 0px !important;
 }
-.mostrar{
-  width:auto
+.mostrar {
+  width: auto;
 }
 @media (max-width: 500px) {
-.mostrar{
-  width: 0;
+  .mostrar {
+    width: 0;
+  }
 }
-}
-
-
 </style>

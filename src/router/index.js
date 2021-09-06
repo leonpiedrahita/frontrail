@@ -18,14 +18,8 @@ const routes = [
       public: true
     },
   },
-  {
-    path: '/pasos',
-    name: 'Pasos',
-    component: () => import(/* webpackChunkName: "pasos" */ '../views/Pasos.vue'),
-    meta: {
-      public: true
-    },
-  },
+
+ 
   {
     path: '/about',
     name: 'About',
@@ -97,6 +91,30 @@ const routes = [
           auth: true
         }
       },
+      {
+        path: 'pasos',
+        name: 'Pasos',
+        component: () => import(/* webpackChunkName: "pasos" */ '../views/Pasos.vue'),
+        meta: {
+          public: true
+        },
+      },
+      {
+        path: 'listarordenes',
+        name: 'ListarOrdenes',
+        component: () => import(/* webpackChunkName: "listarordenes" */ '../views/ListarOrdenes.vue'),
+        meta: {
+          public: true
+        },
+      },
+      {
+        path: 'refequipos',
+        name: 'RefEquipos',
+        component: () => import(/* webpackChunkName: "refequipos" */ '../views/RefEquipos.vue'),
+        meta: {
+          public: true
+        },
+      }
     ]
   },
 
