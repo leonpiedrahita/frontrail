@@ -427,8 +427,7 @@ export default {
           "Repuestos entregados",
           "Equipo despachado",
         ];
-      } else if (this.$store.state.user.rol === "facturación") {
-        this.listadeetapas = ["Repuestos aprobados"];
+      
       } else if (this.$store.state.user.rol === "cotizaciones") {
         this.listadeetapas = ["Cotización aprobada"];
       } else if (this.$store.state.user.rol === "facturación") {
@@ -443,7 +442,7 @@ export default {
       }
     },
     bloqueoDesbloqueo() {
-      if (this.$store.state.user.rol == ("administrador" || "cartera")) {
+      if (this.$store.state.user.rol == ("administrador" || "cartera" || "asesor")) {
         this.bloqueodesbloqueo = true;
       }
     },

@@ -42,7 +42,7 @@
             hide-details
           ></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn v-bind="size" @click="nuevoCliente()"> Nuevo Cliente </v-btn>
+          <v-btn class="c6" v-bind="size" @click="nuevoCliente()"> Nuevo Cliente </v-btn>
           <v-spacer></v-spacer>
           <!-- Dialogo para editar Cliente -->
           <v-dialog v-model="dialog" max-width="500px">

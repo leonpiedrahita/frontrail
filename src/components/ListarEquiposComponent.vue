@@ -985,8 +985,7 @@ export default {
           "Repuestos entregados",
           "Equipo despachado",
         ];
-      } else if (this.$store.state.user.rol === "facturación") {
-        this.listadeetapas = ["Repuestos aprobados"];
+     
       } else if (this.$store.state.user.rol === "cotizaciones") {
         this.listadeetapas = ["Cotización aprobada"];
       } else if (this.$store.state.user.rol === "facturación") {
