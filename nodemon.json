@@ -1,6 +1,7 @@
 {
     "env": {
         
-        "BASE_URL":"https://quiet-plains-55064.herokuapp.com/"
+        "BASE_URL":"https://quiet-plains-55064.herokuapp.com/",
+        "API_URL":"https://serene-inlet-85317.herokuapp.com/"
     }
 }
