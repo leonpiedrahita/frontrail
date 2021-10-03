@@ -3,7 +3,4 @@ module.exports = {
     'vuetify'
   ],
   
-  devServer:{
-    proxy: 'https://serene-inlet-85317.herokuapp.com/'
-  }
 }
