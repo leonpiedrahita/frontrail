@@ -15,7 +15,7 @@ export default new Vuex.Store({
         icono:'',
         color:'',
         /* ruta:'http://localhost:3000/', */
-        ruta:'https://serene-inlet-85317.herokuapp.com/',
+        ruta:'https://quiet-plains-55064.herokuapp.com/',
        identificacion:"",
        ordenes:{},
        equipo:{},
