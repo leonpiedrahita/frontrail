@@ -4,7 +4,9 @@
       <v-row align="center" class="justify-center" style="height: 100vh">
         <v-col cols="12" lg="6" align="center">
           <v-card class="pa-10">
-            <v-card-title title class="justify-center">  Acceder a su cuenta </v-card-title>
+            <v-card-title title class="justify-center">
+              Acceder a su cuenta
+            </v-card-title>
             <v-form ref="form" lazy-validation>
               <v-text-field
                 v-model="login.email"
@@ -22,7 +24,6 @@
                 :disabled="!(this.login.email && this.login.password)"
                 color="success"
                 class="mr-4"
-
                 block
                 @click="loginUser"
               >
@@ -40,7 +41,7 @@ import swal from "sweetalert";
 import axios from "axios";
 
 export default {
-    name:'TheLogin',
+  name: "TheLogin",
   data() {
     return {
       login: {
@@ -49,29 +50,33 @@ export default {
       },
     };
   },
-   beforeCreate() {
-     this.$store.dispatch("autoLogin")
-     if(this.$store.state.existe === 1){
-       this.$router.push({name: 'ListarClientes'})
-     }
-       
+  beforeCreate() {
+    this.$store.dispatch("autoLogin");
+    if (this.$store.state.existe === 1) {
+      this.$router.push({ name: "ListarClientes" });
+    }
+
     //this.$store.dispatch("autoLogin")? this.$router.push({name: 'ListarClientes'}) : false;
   },
   methods: {
     async loginUser() {
-      axios
-        .post(this.$store.state.ruta +"api/usuario/ingresar", this.login)
+      
+      const axiosInstance = axios.create({
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+
+      axiosInstance
+             
+        .post(this.$store.state.ruta + "api/usuario/ingresar", this.login)
         .then((response) => {
           return response.data;
         })
         .then((data) => {
-            this.$store.dispatch("guardarToken",data.tokenReturn );//se guarda el token en la tienda
-            this.$router.push({name: 'ListarClientes'});
-          swal(
-            "¡Hola!",
-            this.$store.state.user.nombre ,
-            "success"
-          );
+          this.$store.dispatch("guardarToken", data.tokenReturn); //se guarda el token en la tienda
+          this.$router.push({ name: "ListarClientes" });
+          swal("¡Hola!", this.$store.state.user.nombre, "success");
           console.log(data);
         })
         .catch((error) => {
