@@ -56,7 +56,7 @@
                 <v-list-item-title> Existentes </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item :to="{ name: 'RefEquipos' }">
+            <v-list-item :to="{ name: 'ListarRefEquipos' }">
               <v-list-item-content>
                 <v-list-item-title> Referencias </v-list-item-title>
               </v-list-item-content>

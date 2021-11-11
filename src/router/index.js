@@ -84,6 +84,14 @@ const routes = [
         }
       },
       {
+        path: 'formulariorefequipos',
+        name: 'FormularioRefEquipos',
+        component: () => import(/* webpackChunkName: "formulariogenerarorden" */ '../views/FormularioRefEquipos.vue'),
+        meta: {
+          auth: true
+        }
+      },
+      {
         path: 'listarclientes',
         name: 'ListarClientes',
         component: () => import(/* webpackChunkName: "listarclientes" */ '../views/ListarClientes.vue'),
@@ -103,6 +111,14 @@ const routes = [
         path: 'listarordenes',
         name: 'ListarOrdenes',
         component: () => import(/* webpackChunkName: "listarordenes" */ '../views/ListarOrdenes.vue'),
+        meta: {
+          public: true
+        },
+      },
+      {
+        path: 'listarrefequipos',
+        name: 'ListarRefEquipos',
+        component: () => import(/* webpackChunkName: "listarrefequipos" */ '../views/ListarRefEquipos.vue'),
         meta: {
           public: true
         },

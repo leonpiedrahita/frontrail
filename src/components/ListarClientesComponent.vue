@@ -33,7 +33,9 @@
       <!-- Encabledazo de la página -->
       <template v-slot:top>
         <v-toolbar flat>
-          <v-spacer></v-spacer>
+          <v-row justify="space-around">
+        
+        <v-col cols="6" sm="5">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -41,9 +43,13 @@
             single-line
             hide-details
           ></v-text-field>
-          <v-spacer></v-spacer>
-          <v-btn class="c6" v-bind="size" @click="nuevoCliente()"> Nuevo Cliente </v-btn>
-          <v-spacer></v-spacer>
+           </v-col>
+        
+        <v-col cols="6" sm="2" >
+          <v-btn class="c6" large @click="nuevoCliente()"> Nuevo Cliente </v-btn>
+          </v-col>
+          
+        </v-row>
           <!-- Dialogo para editar Cliente -->
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
@@ -96,7 +102,7 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="cerrareditar">
+                <v-btn color="error darken-1" text @click="cerrareditar">
                   Cancelar
                 </v-btn>
                 <v-btn
@@ -108,7 +114,7 @@
                       editedItem.nombre
                     )
                   "
-                  color="blue darken-1"
+                  color="primary darken-1"
                   text
                   @click="editar"
                   v-if="Editarcliente"
@@ -124,7 +130,7 @@
                       editedItem.nombre
                     )
                   "
-                  color="blue darken-1"
+                  color="primary darken-1"
                   text
                   @click="agregarCliente"
                   v-if="Agregarcliente"
@@ -168,12 +174,12 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="cerraragregarsede">
+                <v-btn color="error darken-1" text @click="cerraragregarsede">
                   Cancelar
                 </v-btn>
                 <v-btn
                   :disabled="!(editedItem2.nombre && editedItem2.direccion)"
-                  color="blue darken-1"
+                  color="primary darken-1"
                   text
                   @click="agregarnuevasede"
                 >
@@ -190,10 +196,10 @@
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="cerrareliminarsede"
-                  >Cancel</v-btn
+                <v-btn color="error darken-1" text @click="cerrareliminarsede"
+                  >Cancelar</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="save3">OK</v-btn>
+                <v-btn color="primary darken-1" text @click="save3">Aceptar</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
@@ -254,6 +260,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <p>{{this.editedItem}}</p>
   </v-card>
 </template>
 <script>
@@ -337,7 +344,7 @@ export default {
         class: "titulo--text font-weight-bold",
       },
     ],
-    desserts: [],
+  
     editedIndex: -1,
     equipos: [],
     prueba: {},
@@ -373,12 +380,7 @@ export default {
     titulosede() {
       return "Agregar sede";
     },
-    size() {
-      const size = { xs: "x-small", sm: "small", lg: "large", xl: "x-large" }[
-        this.$vuetify.breakpoint.name
-      ];
-      return size ? { [size]: true } : {};
-    },
+    
   },
 
   watch: {
@@ -443,19 +445,18 @@ export default {
       }
     },
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
+     
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
       this.Editarcliente = true;
     },
     editItem2(item) {
-      this.editedIndex = this.desserts.indexOf(item);
+     
       this.editedItem = Object.assign({}, item);
-
       this.dialog2 = true;
     },
     deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
+      
       this.editedItem2 = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -494,6 +495,7 @@ export default {
     editar() {
       //Editar categoria
       this.Editarcliente = false;
+      
       axios
         .patch(
           this.$store.state.ruta +
@@ -512,6 +514,7 @@ export default {
         )
         .then((response) => {
           console.log(response);
+           this.cerrareditar();
           this.listar();
         })
         .catch((error) => {
@@ -519,7 +522,7 @@ export default {
           return error;
         });
 
-      this.cerrareditar();
+     
     },
     agregarCliente() {
       //Editar categoria
@@ -535,6 +538,7 @@ export default {
         this.dialogo = true;
       } else {
         this.Agregarcliente = false;
+        
         axios
           .post(
             this.$store.state.ruta + "api/cliente/registrar/",

@@ -20,7 +20,9 @@ export default new Vuex.Store({
        identificacion:"",
        ordenes:{},
        equipo:{},
-       idorden:""
+       idorden:"",
+       referenciaequipo:{},
+       nuevareferencia:0
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme
@@ -44,6 +46,11 @@ export default new Vuex.Store({
             state.ordenes=ordenes
             state.equipo=equipo
             state.idorden=idorden
+        },
+        setReferenciaEquipo(state,{referenciaequipo,nuevareferencia}){
+            state.referenciaequipo=referenciaequipo
+            state.nuevareferencia=nuevareferencia
+            
         }
 
     },
@@ -95,6 +102,10 @@ export default new Vuex.Store({
         },
         guardarOrdenesEquipo({ commit }, {ordenes,equipo,idorden}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
             commit("setOrdenesEquipo", {ordenes,equipo,idorden});
+            
+        },
+        guardarReferenciaEquipo({ commit }, {referenciaequipo,nuevareferencia}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
+            commit("setReferenciaEquipo", {referenciaequipo,nuevareferencia});
             
         },
         
