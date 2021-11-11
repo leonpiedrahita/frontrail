@@ -260,7 +260,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <p>{{this.editedItem}}</p>
+    <!-- <p>{{this.editedItem}}</p> -->
   </v-card>
 </template>
 <script>
