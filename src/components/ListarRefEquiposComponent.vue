@@ -36,7 +36,8 @@
     </template>
       <template v-slot:[`item.crear`]="{ item }">
         <v-icon medium @click="abrirOrden(item)">
-          mdi-vector-polyline-edit
+         
+          mdi-file-document-edit-outline
         </v-icon>
       </template>
     </v-data-table>

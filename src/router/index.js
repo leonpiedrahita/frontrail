@@ -18,6 +18,14 @@ const routes = [
       public: true
     },
   },
+  {
+    path: '/imprimirhv',
+    name: 'ImprimirHv',
+    component: () => import(/* webpackChunkName: "imprimirhv" */ '../views/ImprimirHv.vue'),
+    meta: {
+      public: true
+    },
+  },
 
  
   {

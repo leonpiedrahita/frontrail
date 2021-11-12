@@ -393,7 +393,7 @@
         </v-icon>
       </template>
     </v-data-table>
-    <!-- <pre> {{ nuevoequipo}} </pre> -->
+    <pre> {{ equipos}} </pre>
   </v-card>
 </template>
 <script>
