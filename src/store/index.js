@@ -14,9 +14,9 @@ export default new Vuex.Store({
         ubicacion:'',
         icono:'',
         color:'',
-        ruta:'http://localhost:3000/',
+        /* ruta:'http://localhost:3000/', */
        /*  ruta:'https://serene-inlet-85317.herokuapp.com/', */
-       /*  ruta:' https://infinite-wave-12022.herokuapp.com/', */
+        ruta:' https://infinite-wave-12022.herokuapp.com/',
        identificacion:"",
        ordenes:{},
        equipo:{},
