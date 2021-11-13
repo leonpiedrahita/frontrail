@@ -202,35 +202,35 @@
         </v-col>
       </v-row>
       <v-row justify="space-between" class="pa-5 ma-5">
-        <v-col cols="3" class="estilocasilla">
+        <v-col cols="4" class="estilocasilla">
           <header class="estiloheader">Nombre:</header>
           <v-subheader class="estilosubheader">
             Biosystems S.A.S.
           </v-subheader>
         </v-col>
 
-        <v-col cols="3" class="estilocasilla">
+        <v-col cols="4" class="estilocasilla">
           <header class="estiloheader">Teléfono:</header>
           <v-subheader class="estilosubheader">
             (604) 312-07-00
           </v-subheader>
         </v-col>
 
-        <v-col cols="3" class="estilocasilla">
+        <v-col cols="4" class="estilocasilla">
           <header class="estiloheader">Dirección:</header>
           <v-subheader class="estilosubheader">
             Tv 5A # 45-139
           </v-subheader>
         </v-col>
 
-        <v-col cols="3" class="estilocasilla">
+        <v-col cols="6" class="estilocasilla">
           <header class="estiloheader">Ciudad:</header>
           <v-subheader class="estilosubheader">
             Medellín - Antioquia
           </v-subheader>
         </v-col>
 
-        <v-col cols="3" class="estilocasilla">
+        <v-col cols="6" class="estilocasilla">
           <header class="estiloheader"> Área Responsable</header>
           <v-subheader class="estilosubheader">
             Comercial e ingeniería
@@ -491,6 +491,7 @@ export default {
 @media print {
   @page {
     margin: 20px;
+    
   }
   body {
     margin: 1cm;
