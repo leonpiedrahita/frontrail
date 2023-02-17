@@ -27,6 +27,7 @@ const routes = [
     },
   },
 
+
  
   {
     path: '/about',
@@ -83,6 +84,7 @@ const routes = [
           auth: true
         }
       },
+
       {
         path: 'formulariogenerarorden',
         name: 'FormularioGenerarOrden',
@@ -138,7 +140,15 @@ const routes = [
         meta: {
           public: true
         },
-      }
+      },
+      {
+        path: 'detallesequipo',
+        name: 'DetallesEquipo',
+        component: () => import(/* webpackChunkName: "detallesequipo" */ '../views/DetallesEquipo.vue'),
+        meta: {
+          public: true
+        },
+      },
     ]
   },
 

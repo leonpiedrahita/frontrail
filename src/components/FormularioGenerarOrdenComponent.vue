@@ -1,6 +1,16 @@
 <template>
   <form>
-    <v-container>
+          <v-row>
+        
+        <v-spacer></v-spacer>
+          <v-switch
+      v-model="archivo"
+      label="Reporte de servicio externo"
+    ></v-switch>
+        <v-spacer></v-spacer>
+      </v-row>
+    
+    <v-container v-if="!archivo">
       <v-divider class="mb-5 mt-5"></v-divider>
       <v-row>
         <v-col cols="12" align-self="center">
@@ -356,36 +366,153 @@
           </v-card-actions>
         </v-col>
       </v-row>
-      <v-dialog v-model="dialogofirma" max-width="450px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">Firma Cliente</span>
-          </v-card-title>
+    
+      <v-dialog v-model="esperaguardar" persistent width="500">
+        <v-card color="c6" dark>
           <v-card-text>
-            <div class="container align-center">
-              <div class="col-12 justify-center" max-width="450px">
-                <VueSignaturePad
-                  id="signature"
-                  width="350px"
-                  height="200px"
-                  ref="signaturePad"
-                  :options="options"
-                />
-              </div>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-
-                <v-btn class="blue darken-1" @click="undo"> Deshacer </v-btn>
-                <v-spacer></v-spacer>
-
-                <v-btn class="blue darken-1" @click="save"> Guardar </v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </div>
+            Por favor espere...
+            <v-progress-linear
+              indeterminate
+              color="white"
+              class="mb-0"
+            ></v-progress-linear>
           </v-card-text>
         </v-card>
       </v-dialog>
+
+      <v-card-actions> </v-card-actions>
+    </v-container>
+    <v-container v-if="archivo">
+     
+      <v-divider class="mb-5 mt-5"></v-divider>
+      <v-row>
+        <v-col cols="12" align-self="center">
+          <div class="gridtitulo">Detalles de la asistencia :</div>
+        </v-col>
+      </v-row>
+      <v-row justify="space-around">
+        <v-col cols="12" md="4">
+          <v-select
+            v-model="reporte.tipodeasistencia"
+            :items="tipodeasistencia"
+            label="Tipo de asistencia"
+            required
+            :rules="[(v) => !!v || 'Campo Requerido']"
+          ></v-select>
+        </v-col>
+
+        
+        <v-col cols="12" md="4">
+          <v-menu
+            v-model="menu1"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="reporte.fechadeinicio"
+                label="Fecha de inicio"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="reporte.fechadeinicio"
+              @input="menu1 = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-menu
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="reporte.fechadefinalizacion"
+                label="Fecha de finalización"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="reporte.fechadefinalizacion"
+              @input="menu2 = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+      </v-row>
+      <v-divider class="mb-5 mt-5"></v-divider>
+<v-row justify="space-around">
+        <v-col cols="12" md="6">
+      <v-file-input
+    v-model="files"
+    placeholder="Seleccione el reporte"
+    label="Reporte"
+    multiple
+    prepend-icon="mdi-paperclip"
+    accept="image/png, image/jpeg, image/bmp"
+  >
+    <template v-slot:selection="{ text }">
+      <v-chip
+        small
+        label
+        color="primary"
+      >
+        {{ text }}
+      </v-chip>
+    </template>
+  </v-file-input>
+  </v-col>
+  </v-row>
+      <v-row>
+        
+         
+          
+            
+            
+              <v-spacer> </v-spacer>
+              <v-btn
+                class="blue darken-1 ma-1"
+                @click="guardarReporte"
+                :disabled="
+                  !(
+                    this.reporte.tipodeasistencia &&
+                    this.reporte.duracion &&
+                    this.reporte.fechadeinicio &&
+                    this.reporte.fechadefinalizacion &&
+                    this.reporte.profesionalcliente &&
+                    this.reporte.telefonocliente &&
+                    this.reporte.hallazgos &&
+                    this.reporte.actividades &&
+                    this.reporte.pruebas &&
+                    this.reporte.repuestos &&
+                    this.reporte.observaciones &&
+                    this.reporte.firmaingeniero &&
+                    this.reporte.ingeniero
+                  )
+                "
+              >
+                Guardar y finalizar
+              </v-btn>
+              <!--               <v-btn class="blue darken-1 ma-1" @click="save">
+                Guardar y Finalizar
+              </v-btn> -->
+            
+        <v-spacer> </v-spacer>
+      </v-row>
+      
       <v-dialog v-model="esperaguardar" persistent width="500">
         <v-card color="c6" dark>
           <v-card-text>
@@ -428,11 +555,13 @@ export default {
   },
 
   data: () => ({
+    files: [],
     slider: null,
     dialogofirma: false,
     options: {
       penColor: "black",
     },
+    archivo: false,
     name: "",
     email: "",
     select: null,

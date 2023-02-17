@@ -378,6 +378,12 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:[`item.detalles`]="{ item }">
+        <v-icon medium @click="detallesEquipo(item)">
+          mdi-archive-eye-outline
+        </v-icon>
+      </template>
+
       <template v-slot:[`item.editar`]="{ item }">
         <v-icon medium @click="modificarEquipo(item)"> mdi-pencil </v-icon>
       </template>
@@ -393,7 +399,7 @@
         </v-icon>
       </template>
     </v-data-table>
-    <pre> {{ equipos}} </pre>
+    <pre> {{ this.$store.state.detallesequipo }} </pre>
   </v-card>
 </template>
 <script>
@@ -425,9 +431,9 @@ export default {
       },
     ],
     headers: [
-      { text: "Nombre del dispositivo", value: "nombre", align: "center" },
-      { text: "Número de serie", value: "serie", align: "center" },
-      { text: "N. Inventario", value: "placadeinventario", align: "center" },
+      { text: "Nombre", value: "nombre", align: "center" },
+      { text: "Serie", value: "serie", align: "center" },
+      { text: "Inventario", value: "placadeinventario", align: "center" },
       {
         text: "Propietario",
         align: "center",
@@ -443,15 +449,15 @@ export default {
         align: "center",
         value: "ubicacionnombre",
       },
-      { text: "T. Contrato", value: "tipodecontrato", align: "center" },
+      { text: "Contrato", value: "tipodecontrato", align: "center" },
       {
-        text: "Estado",
+        text: "Detalles",
+        value: "detalles",
+        sortable: false,
         align: "center",
-        value: "estado",
-        divider: true,
       },
       {
-        text: "Editar Equipo",
+        text: "Editar",
         value: "editar",
         sortable: false,
         align: "center",
@@ -500,7 +506,7 @@ export default {
     nuevoequipo: {
       nombre: "",
       marca: {},
-      id:"",
+      id: "",
       serie: "",
       placadeinventario: "",
       tipodecontrato: "",
@@ -539,7 +545,7 @@ export default {
     nuevoequipopordefecto: {
       nombre: "",
       marca: {},
-      id:"",
+      id: "",
       serie: "",
       placadeinventario: "",
       tipodecontrato: "",
@@ -586,7 +592,7 @@ export default {
           return equipo.marca;
         }
       });
-      
+
       var filtered = this.nuevoequipo.marca.filter(function (el) {
         return el != null;
       });
@@ -960,6 +966,12 @@ export default {
             return error;
           });
       }
+    },
+    detallesEquipo(item) {
+      this.$store.dispatch("guardarDetallesEquipo", {
+        detallesequipo: Object.assign({}, item),
+      });
+      this.$router.push({ name: "DetallesEquipo" });
     },
     asignarLista() {
       if (this.$store.state.user.rol === "administrador") {

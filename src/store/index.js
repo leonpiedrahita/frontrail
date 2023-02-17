@@ -14,15 +14,16 @@ export default new Vuex.Store({
         ubicacion:'',
         icono:'',
         color:'',
-        /* ruta:'http://localhost:3000/', */
+        ruta:'http://localhost:3000/',
        /*  ruta:'https://serene-inlet-85317.herokuapp.com/', */
-        ruta:' https://infinite-wave-12022.herokuapp.com/',
+        /* ruta:' https://infinite-wave-12022.herokuapp.com/', */
        identificacion:"",
        ordenes:{},
        equipo:{},
        idorden:"",
        referenciaequipo:{},
-       nuevareferencia:0
+       nuevareferencia:0,
+       detallesequipo:{}
     },
     mutations: {//creo las mutaciones para cambiar el valor de las variables del estado
         setToken(state, token) {//con state accedo a las variables del estado y con el token accedo al valor que devolvio el back al momento de loguearme
@@ -50,6 +51,11 @@ export default new Vuex.Store({
         setReferenciaEquipo(state,{referenciaequipo,nuevareferencia}){
             state.referenciaequipo=referenciaequipo
             state.nuevareferencia=nuevareferencia
+            
+        },
+        setDetallesEquipo(state,detallesequipo){
+            state.detallesequipo=detallesequipo
+            
             
         }
 
@@ -106,6 +112,10 @@ export default new Vuex.Store({
         },
         guardarReferenciaEquipo({ commit }, {referenciaequipo,nuevareferencia}) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
             commit("setReferenciaEquipo", {referenciaequipo,nuevareferencia});
+            
+        },
+        guardarDetallesEquipo({ commit }, detallesequipo) {//el commit es algo que se recibe para confirmar las llamadas a mutaciones
+            commit("setDetallesEquipo", detallesequipo.detallesequipo);
             
         },
         
